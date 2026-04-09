@@ -4,34 +4,27 @@
 
     <body>
         <main class="register-main">
-            <section class="register-card">
-                <h2>¡Regístrate!</h2>
-
-                <form action="/" method="GET" class="register-form">
-                    <div class="control-formulario">
-                        <input type="text" name="name" placeholder="Tu nombre" required>
-                    </div>
-
-                    <div class="control-formulario">
-                        <input type="text" name="user" placeholder="Usuario" required>
-                    </div>
-
-                    <div class="control-formulario">
-                        <input type="email" name="email" placeholder="Tu email" required>
-                    </div>
-
-                    <div class="control-formulario">
-                        <input type="password" name="password" placeholder="Tu nueva contraseña" required>
-                    </div>
-
-                    <button type="submit" class="btn-register">Registrarse</button>
-                </form>
-
-                <div class="register-footer">
+            <div class="top-color-band"></div>
+            <div class="register-wrapper">
+                <section class="register-card">
+                    <h2>¡Regístrate!</h2>
+                    <form action="/" method="GET" class="register-form">
+                        <div class="control-formulario">
+                            <input type="email" name="email" placeholder="Tu email" required>
+                        </div>
+                        <div class="control-formulario">
+                            <input type="password" name="password" placeholder="Tu nueva contraseña" required>
+                        </div>
+                        <div class="control-formulario">
+                            <input type="password" name="password_repeat" placeholder="Repite tu contraseña" required>
+                        </div>
+                        <button type="submit" class="btn-register">Crear Cuenta</button>
+                    </form>
+                </section>
+                <div class="register-footer-outside">
                     <p>¿Ya tienes cuenta? <a href="/login">Inicia Sesión</a></p>
-
                 </div>
-            </section>
+            </div>
         </main>
         <%- include('../partials/footer') %>
     </body>
