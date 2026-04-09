@@ -2,22 +2,72 @@
 <html lang="es">
 <%- include('../partials/header') %>
 <body>
-    <main>
-        <section class="product-detail">
-            <div class="product-detail-container" style="display: flex; gap: 40px; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333;">
-                <img src="/img/ryzen7.jpg" alt="Producto" style="width: 400px; background: white; padding: 20px; border-radius: 4px;">
-                <div class="info">
-                    <h2 style="color: #00c8ff;">AMD Ryzen 7 5800X</h2>
-                    <p style="font-size: 2rem; font-weight: bold; margin: 20px 0;">$350.000</p>
-                    <p style="color: #aaa; line-height: 1.6;">
-                        El procesador AMD Ryzen 7 5800X cuenta con 8 núcleos y 16 hilos, ideal para gaming de alto rendimiento y creación de contenido. 
-                        Arquitectura Zen 3 con un rendimiento por vatio increíblemente eficiente.
-                    </p>
-                    <div style="margin-top: 30px;">
-                        <%- include('../partials/button') %>
-                    </div>
+    <main class="product-detail-main">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> > <a href="/products">Procesadores</a> > AMD Ryzen 7 5800X
+        </div>
+
+        <section class="detail-card">
+            <div class="gallery-column">
+                <div class="thumbnails">
+                    <img src="https://http2.mlstatic.com/D_NQ_NP_667232-MLA46132407633_052021-O.webp" alt="Thumb 1" class="thumb-image active">
+                    <img src="https://m.media-amazon.com/images/I/616vMvOz7GL.jpg" alt="Thumb 2" class="thumb-image">
+                    <img src="https://m.media-amazon.com/images/I/41K-U3fO5CL._AC_UF894,1000_QL80_.jpg" alt="Thumb 3" class="thumb-image">
+                </div>
+                <div class="main-image-container">
+                    <img src="https://http2.mlstatic.com/D_NQ_NP_667232-MLA46132407633_052021-O.webp" alt="AMD Ryzen 7 5800X">
                 </div>
             </div>
+
+            <div class="info-column">
+                <h2>AMD Ryzen 7 5800X</h2>
+                <div class="product-price">$350.000</div>
+                <button class="btn-add-cart">Agregar al Carrito</button>
+                
+                <div class="product-description">
+                    <p>Un procesador verdaderamente fabuloso para entusiastas del gaming y profesionales.</p>
+                    <p>Cuenta con 8 núcleos y 16 hilos, con una frecuencia turbo de hasta 4.7 GHz. Basado en la arquitectura Zen 3, este procesador ofrece un rendimiento excepcional en IPC y eficiencia energética.</p>
+                    <p>Ideal para tareas pesadas, creación de contenido y los juegos más exigentes del mercado.</p>
+                    <p><strong>Nota:</strong> No incluye cooler de stock. Se recomienda refrigeración líquida o aire de alto desempeño.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTOS RELACIONADOS -->
+        <h3 class="related-title">También te puede interesar</h3>
+        <section class="productos-container" style="margin-bottom: 50px;">
+            <a href="/products" class="product-card" style="text-decoration: none;">
+                <img src="https://http2.mlstatic.com/D_NQ_NP_665096-MLA52533036814_112022-O.webp" alt="Relacionado 1">
+                <div class="product-info">
+                    <p class="price">$420.000</p>
+                    <h4 class="name">Nvidia GeForce RTX 4060 Ti</h4>
+                    <button class="boton-comprar">Ver Detalle</button>
+                </div>
+            </a>
+            <a href="/products" class="product-card" style="text-decoration: none;">
+                <img src="https://http2.mlstatic.com/D_NQ_NP_900388-MLA48096238384_112021-O.webp" alt="Relacionado 2">
+                <div class="product-info">
+                    <p class="price">$85.000</p>
+                    <h4 class="name">Corsair Vengeance 16GB RGB</h4>
+                    <button class="boton-comprar">Ver Detalle</button>
+                </div>
+            </a>
+            <a href="/products" class="product-card" style="text-decoration: none;">
+                <img src="https://http2.mlstatic.com/D_NQ_NP_725901-MLA48096238381_112021-O.webp" alt="Relacionado 3">
+                <div class="product-info">
+                    <p class="price">$120.000</p>
+                    <h4 class="name">Samsung 980 Pro 1TB NVMe</h4>
+                    <button class="boton-comprar">Ver Detalle</button>
+                </div>
+            </a>
+            <a href="/products" class="product-card" style="text-decoration: none;">
+                <img src="https://m.media-amazon.com/images/I/619m9UosS9L._AC_UF894,1000_QL80_.jpg" alt="Relacionado 4">
+                <div class="product-info">
+                    <p class="price">$210.000</p>
+                    <h4 class="name">ASUS ROG Strix B550-F</h4>
+                    <button class="boton-comprar">Ver Detalle</button>
+                </div>
+            </a>
         </section>
     </main>
     <%- include('../partials/footer') %>

@@ -1,46 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <%- include('../partials/header') %>
-<body>
-    <main>
-        <section class="banner">
-            <h2 style="text-align: center; margin: 20px 0; color: #00c8ff;">Equipa tu Setup con lo mejor</h2>
-        </section>
 
-        <section class="productos-container">
-            
-            <article class="product-card">
-                <img src="/img/ryzen7.jpg" alt="Procesador AMD Ryzen 7">
-                <div class="product-info">
-                    <p class="price">$350.000</p>
-                    <p class="discount">5% OFF</p>
-                    <h4 class="name">AMD Ryzen 7 5800X</h4>
-                    <%- include('../partials/button') %>
+    <body>
+        <main>
+            <!-- SECCIÓN PRODUCT HERO (Beneficios arriba) -->
+            <section class="hero-section">
+                <article class="product-hero"
+                    style="background-image: url('https://i.blogs.es/1e6d84/win11-hero/1366_2000.jpeg');">
+                    <div class="hero-content">
+                        <h3>Sistemas Operativos</h3>
+                        <p>30% de descuento en licencias Windows</p>
+                    </div>
+                </article>
+                <article class="product-hero"
+                    style="background-image: url('https://hardzone.es/app/uploads-hardzone.es/2025/12/steam2025.jpg');">
+                    <div class="hero-content">
+                        <h3>Bonus Gaming</h3>
+                        <p>Gift Card Steam $50 USD en compras superiores a $500.000</p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- SECCIÓN CATEGORÍAS (Debajo de beneficios) -->
+            <section class="categories-section">
+                <div class="categories-grid">
+                    <article class="category-item">
+                        <i class="fas fa-microchip"></i>
+                        <span>Procesadores</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-desktop"></i>
+                        <span>Monitores</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-memory"></i>
+                        <span>Memorias RAM</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-laptop"></i>
+                        <span>Notebooks</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-hdd"></i>
+                        <span>Almacenamiento</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-plug"></i>
+                        <span>Fuentes</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Periféricos</span>
+                    </article>
+                    <article class="category-item">
+                        <i class="fas fa-video"></i>
+                        <span>Placas de Video</span>
+                    </article>
                 </div>
-            </article>
+            </section>
 
-            <article class="product-card">
-                <img src="/img/rtx.jpg" alt="Placa de Video RTX 4060">
-                <div class="product-info">
-                    <p class="price">$420.000</p>
-                    <p class="discount">10% OFF</p>
-                    <h4 class="name">Nvidia GeForce RTX 4060 Ti</h4>
-                    <%- include('../partials/button') %>
-                </div>
-            </article>
+            <!-- LISTADO DE PRODUCTOS -->
+            <section class="productos-section">
+                <h2 style="text-align: center; margin: 40px 0; color: #00c8ff;">Te puede interesar</h2>
+                <div class="productos-container">
 
-            <article class="product-card">
-                <img src="/img/vengeance.jpg" alt="Memoria RAM">
-                <div class="product-info">
-                    <p class="price">$85.000</p>
-                    <h4 class="name">Corsair Vengeance 16GB RGB</h4>
-                    <%- include('../partials/button') %>
-                </div>
-            </article>
+                    <a href="/products" class="product-card" style="text-decoration: none;">
+                        <img src="https://http2.mlstatic.com/D_NQ_NP_667232-MLA46132407633_052021-O.webp"
+                            alt="Procesador AMD Ryzen 7">
+                        <div class="product-info">
+                            <p class="price">$350.000</p>
+                            <p class="discount">5% OFF</p>
+                            <h4 class="name">AMD Ryzen 7 5800X</h4>
+                            <button class="boton-comprar">Ver Detalle</button>
+                        </div>
+                    </a>
 
-        </section>
-    </main>
+                    <a href="/products" class="product-card" style="text-decoration: none;">
+                        <img src="https://http2.mlstatic.com/D_NQ_NP_665096-MLA52533036814_112022-O.webp"
+                            alt="Placa de Video RTX 4060">
+                        <div class="product-info">
+                            <p class="price">$420.000</p>
+                            <p class="discount">10% OFF</p>
+                            <h4 class="name">Nvidia GeForce RTX 4060 Ti</h4>
+                            <button class="boton-comprar">Ver Detalle</button>
+                        </div>
+                    </a>
 
-    <%- include('../partials/footer') %>
-</body>
+                    <a href="/products" class="product-card" style="text-decoration: none;">
+                        <img src="https://http2.mlstatic.com/D_NQ_NP_900388-MLA48096238384_112021-O.webp"
+                            alt="Memoria RAM">
+                        <div class="product-info">
+                            <p class="price">$85.000</p>
+                            <h4 class="name">Corsair Vengeance 16GB RGB</h4>
+                            <button class="boton-comprar">Ver Detalle</button>
+                        </div>
+                    </a>
+
+                    <a href="/products" class="product-card" style="text-decoration: none;">
+                        <img src="https://http2.mlstatic.com/D_NQ_NP_725901-MLA48096238381_112021-O.webp"
+                            alt="SSD Samsung">
+                        <div class="product-info">
+                            <p class="price">$120.000</p>
+                            <h4 class="name">Samsung 980 Pro 1TB NVMe</h4>
+                            <button class="boton-comprar">Ver Detalle</button>
+                        </div>
+                    </a>
+
+            </section>
+        </main>
+
+        <%- include('../partials/footer') %>
+    </body>
+
 </html>
