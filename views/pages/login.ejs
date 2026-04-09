@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <%- include('../partials/header') %>
-<body>
-    <main>
-        <section class="form-container">
-            <h2>Iniciar Sesión</h2>
-            <form action="/" method="GET">
-                <div class="control-formulario">
-                    <label>Usuario o Email</label>
-                    <input type="text" class="input-standard" placeholder="Ej: Gamer_Olivia">
+
+    <body>
+        <main class="register-main">
+            <section class="register-card">
+                <h2>Iniciar Sesión</h2>
+                <form action="/" method="GET" class="register-form">
+                    <div class="control-formulario">
+                        <input type="text" name="user" placeholder="Usuario" required>
+                    </div>
+
+                    <div class="control-formulario">
+                        <input type="password" name="password" placeholder="Contraseña" required>
+                    </div>
+
+                    <button type="button" class="btn-register" onclick="window.location.href='/'">Iniciar
+                        sesion</button>
+                </form>
+
+                <div class="register-footer">
+                    <p>No tienes cuenta? <a href="/register">Registrate.</a></p>
                 </div>
-                <div class="control-formulario">
-                    <label>Contraseña</label>
-                    <input type="password" class="input-standard">
-                </div>
-                <%- include('../partials/button') %>
-            </form>
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">
-                ¿No tienes cuenta? <a href="/register" style="color: #00c8ff;">Regístrate aquí</a>
-            </p>
-        </section>
-    </main>
-    <%- include('../partials/footer') %>
-</body>
+            </section>
+        </main>
+        <%- include('../partials/footer') %>
+    </body>
+
 </html>
