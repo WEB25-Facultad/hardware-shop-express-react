@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/header') %>
+<body>
+    <main>
+        <section class="banner">
+            <h2 style="text-align: center; margin: 20px 0; color: #00c8ff;">Equipa tu Setup con lo mejor</h2>
+        </section>
+
+        <section class="productos-container">
+            
+            <article class="product-card">
+                <img src="/img/ryzen7.jpg" alt="Procesador AMD Ryzen 7">
+                <div class="product-info">
+                    <p class="price">$350.000</p>
+                    <p class="discount">5% OFF</p>
+                    <h4 class="name">AMD Ryzen 7 5800X</h4>
+                    <%- include('../partials/button') %>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="/img/rtx.jpg" alt="Placa de Video RTX 4060">
+                <div class="product-info">
+                    <p class="price">$420.000</p>
+                    <p class="discount">10% OFF</p>
+                    <h4 class="name">Nvidia GeForce RTX 4060 Ti</h4>
+                    <%- include('../partials/button') %>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="/img/vengeance.jpg" alt="Memoria RAM">
+                <div class="product-info">
+                    <p class="price">$85.000</p>
+                    <h4 class="name">Corsair Vengeance 16GB RGB</h4>
+                    <%- include('../partials/button') %>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

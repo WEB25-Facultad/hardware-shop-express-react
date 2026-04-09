@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/header') %>
+<body>
+    <main>
+        <section class="form-container">
+            <h2>Iniciar Sesión</h2>
+            <form action="/" method="GET">
+                <div class="control-formulario">
+                    <label>Usuario o Email</label>
+                    <input type="text" class="input-standard" placeholder="Ej: Gamer_Olivia">
+                </div>
+                <div class="control-formulario">
+                    <label>Contraseña</label>
+                    <input type="password" class="input-standard">
+                </div>
+                <%- include('../partials/button') %>
+            </form>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">
+                ¿No tienes cuenta? <a href="/register" style="color: #00c8ff;">Regístrate aquí</a>
+            </p>
+        </section>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>

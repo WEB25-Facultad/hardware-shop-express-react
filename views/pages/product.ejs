@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/header') %>
+<body>
+    <main>
+        <section class="product-detail">
+            <div class="product-detail-container" style="display: flex; gap: 40px; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333;">
+                <img src="/img/ryzen7.jpg" alt="Producto" style="width: 400px; background: white; padding: 20px; border-radius: 4px;">
+                <div class="info">
+                    <h2 style="color: #00c8ff;">AMD Ryzen 7 5800X</h2>
+                    <p style="font-size: 2rem; font-weight: bold; margin: 20px 0;">$350.000</p>
+                    <p style="color: #aaa; line-height: 1.6;">
+                        El procesador AMD Ryzen 7 5800X cuenta con 8 núcleos y 16 hilos, ideal para gaming de alto rendimiento y creación de contenido. 
+                        Arquitectura Zen 3 con un rendimiento por vatio increíblemente eficiente.
+                    </p>
+                    <div style="margin-top: 30px;">
+                        <%- include('../partials/button') %>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <%- include('../partials/footer') %>
+</body>
+</html>
