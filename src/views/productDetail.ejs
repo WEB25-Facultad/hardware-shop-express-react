@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('./partials/header') %>
+<body>
+    <main class="product-detail-main">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> > <a href="/products">Productos</a> > <%= product.name %>
+        </div>
+
+        <section class="detail-card">
+            <div class="gallery-column">
+                <div class="thumbnails">
+                    <img src="<%= product.image %>" alt="Thumb 1" class="thumb-image active">
+                    <img src="<%= product.image %>" alt="Thumb 2" class="thumb-image">
+                    <img src="<%= product.image %>" alt="Thumb 3" class="thumb-image">
+                </div>
+                <div class="main-image-container">
+                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                </div>
+            </div>
+
+            <div class="info-column">
+                <h2><%= product.name %></h2>
+                <div class="product-price">$<%= product.price.toLocaleString() %></div>
+                <button class="btn-add-cart">Agregar al Carrito</button>
+                
+                <div class="product-description">
+                    <p><%= product.description %></p>
+                    <p>Ideal para tareas pesadas, creación de contenido y los juegos más exigentes del mercado.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTOS RELACIONADOS -->
+        <% if (locals.related && related.length > 0) { %>
+            <h3 class="related-title">También te puede interesar</h3>
+            <section class="productos-container" style="margin-bottom: 50px;">
+                <% related.forEach(relatedProduct => { %>
+                    <article class="product-card">
+                        <a href="/products/<%= relatedProduct.id %>" style="text-decoration: none; color: inherit;">
+                            <div class="product-img-box">
+                                <img src="<%= relatedProduct.image %>" alt="<%= relatedProduct.name %>">
+                            </div>
+                            <div class="product-info">
+                                <p class="price">$<%= relatedProduct.price.toLocaleString() %></p>
+                                <h4 class="name"><%= relatedProduct.name %></h4>
+                                <button class="boton-comprar">Ver Detalle</button>
+                            </div>
+                        </a>
+                    </article>
+                <% }) %>
+            </section>
+        <% } %>
+    </main>
+    <%- include('./partials/footer') %>
+</body>
+</html>

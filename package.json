@@ -1,15 +1,17 @@
 {
-  "dependencies": {
-    "ejs": "^5.0.1",
-    "express": "^5.2.1"
-  },
   "name": "mi-ecommerce-sprint-1",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1"
+  }
 }

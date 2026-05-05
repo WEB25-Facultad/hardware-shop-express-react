@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<%- include('../partials/header') %>
+<%- include('./partials/header') %>
 <body>
     <main class="cart-main">
         <div class="cart-container-page">
@@ -13,7 +13,7 @@
             <div class="cart-items">
                 <!-- Item 1 -->
                 <article class="cart-item">
-                    <img src="https://http2.mlstatic.com/D_NQ_NP_667232-MLA46132407633_052021-O.webp" alt="AMD Ryzen 7">
+                    <img src="/img/ryzen7.jpg" alt="AMD Ryzen 7">
                     <div class="cart-item-name">
                         <h4>AMD Ryzen 7 5800X</h4>
                     </div>
@@ -32,7 +32,7 @@
 
                 <!-- Item 2 -->
                 <article class="cart-item">
-                    <img src="https://http2.mlstatic.com/D_NQ_NP_665096-MLA52533036814_112022-O.webp" alt="Placa de Video RTX 4060">
+                    <img src="/img/rtx.jpg" alt="Placa de Video RTX 4060">
                     <div class="cart-item-name">
                         <h4>Nvidia GeForce RTX 4060 Ti</h4>
                     </div>
@@ -71,7 +71,7 @@
             </div>
         </div>
     </main>
-    <%- include('../partials/footer') %>
+    <%- include('./partials/footer') %>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const formatNumber = (num) => num.toLocaleString('es-AR').replace(/,/g, '.');

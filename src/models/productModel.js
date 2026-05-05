@@ -1,0 +1,119 @@
+const products = [
+    {
+        id: 1,
+        name: "Ryzen 7 5800X",
+        price: 350000,
+        description: "Procesador de alto rendimiento para gaming y productividad.",
+        image: "/img/ryzen7.jpg",
+        category: "Procesadores"
+    },
+    {
+        id: 2,
+        name: "RTX 3080",
+        price: 800000,
+        description: "Tarjeta gráfica potente para gaming en 4K.",
+        image: "/img/rtx.jpg",
+        category: "Placas de Video"
+    },
+    {
+        id: 3,
+        name: "Corsair Vengeance 16GB",
+        price: 90000,
+        description: "Memoria RAM rápida y confiable.",
+        image: "/img/vengeance.jpg",
+        category: "Memorias RAM"
+    },
+    {
+        id: 4,
+        name: "Samsung 980 Pro 1TB",
+        price: 120000,
+        description: "SSD NVMe ultra rápido.",
+        image: "/img/samsung.jpg",
+        category: "Almacenamiento"
+    },
+    {
+        id: 5,
+        name: "ASUS ROG Swift PG279Q",
+        price: 650000,
+        description: "Monitor Gaming de 27 pulgadas, 165Hz.",
+        image: "/img/asus_monitor.jpg",
+        category: "Monitores"
+    },
+    {
+        id: 6,
+        name: "MacBook Pro M3",
+        price: 2500000,
+        description: "La laptop más potente de Apple con chip M3.",
+        image: "/img/macbook.jpg",
+        category: "Notebooks"
+    },
+    {
+        id: 7,
+        name: "Logitech G Pro X Superlight",
+        price: 150000,
+        description: "Mouse inalámbrico ultra liviano para profesionales.",
+        image: "/img/logitech_mouse.jpg",
+        category: "Periféricos"
+    },
+    {
+        id: 8,
+        name: "Razer Huntsman V2",
+        price: 180000,
+        description: "Teclado óptico ultra rápido con switches analógicos.",
+        image: "/img/razer_keyboard.jpg",
+        category: "Periféricos"
+    },
+    {
+        id: 9,
+        name: "Corsair RM750x",
+        price: 130000,
+        description: "Fuente de poder modular 80 Plus Gold.",
+        image: "/img/corsair_psu.jpg",
+        category: "Fuentes"
+    },
+    {
+        id: 10,
+        name: "Radeon RX 7900 XTX",
+        price: 950000,
+        description: "La GPU más potente de AMD para gaming extremo.",
+        image: "/img/amd_gpu.jpg",
+        category: "Placas de Video"
+    },
+    {
+        id: 11,
+        name: "WD Black SN850X 2TB",
+        price: 180000,
+        description: "Almacenamiento de alto rendimiento para PS5 y PC.",
+        image: "/img/wd_black.jpg",
+        category: "Almacenamiento"
+    },
+    {
+        id: 12,
+        name: "NZXT H5 Flow",
+        price: 110000,
+        description: "Gabinete con flujo de aire optimizado y diseño minimalista.",
+        image: "/img/gaming_case.jpg",
+        category: "Periféricos"
+    },
+    {
+        id: 13,
+        name: "Intel Core i9-13900K",
+        price: 580000,
+        description: "Procesador líder en gaming con 24 núcleos.",
+        image: "/img/intel_cpu.jpg",
+        category: "Procesadores"
+    },
+    {
+        id: 14,
+        name: "MSI Optix G24C",
+        price: 250000,
+        description: "Monitor curvo de 24 pulgadas, 144Hz.",
+        image: "/img/msi_monitor.jpg",
+        category: "Monitores"
+    }
+];
+
+module.exports = {
+    findAll: () => products,
+    findById: (id) => products.find(p => p.id === parseInt(id))
+};

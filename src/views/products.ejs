@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('./partials/header') %>
+
+<body>
+    <main>
+        <section class="productos-section">
+            <h2 style="text-align: center; margin: 40px 0; color: #00c8ff;">Nuestro Catálogo</h2>
+            
+            <div class="productos-container">
+                <% products.forEach(product => { %>
+                    <article class="product-card">
+                        <a href="/products/<%= product.id %>" style="text-decoration: none; color: inherit;">
+                            <div class="product-img-box">
+                                <img src="<%= product.image %>" alt="<%= product.name %>">
+                            </div>
+                            <div class="product-info">
+                                <p class="price">$<%= product.price.toLocaleString() %></p>
+                                <h4 class="name"><%= product.name %></h4>
+                                <button class="boton-comprar">Ver Detalle</button>
+                            </div>
+                        </a>
+                    </article>
+                <% }) %>
+            </div>
+        </section>
+    </main>
+
+    <%- include('./partials/footer') %>
+</body>
+
+</html>
