@@ -12,7 +12,6 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 
 // 2. Carpeta de archivos estáticos (CSS, Imágenes)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // 3. RUTAS DEFINIDAS
 app.use('/products', productRoutes);
@@ -41,6 +40,11 @@ app.get('/register', (req, res) => {
 // Inicio de Sesión
 app.get('/login', (req, res) => {
     res.render('login');
+});
+
+// 4. Manejo de Error 404 (Debe ir después de todas las rutas)
+app.use((req, res) => {
+    res.status(404).render('404');
 });
 
 // 4. Servidor

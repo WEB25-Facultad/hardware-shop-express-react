@@ -18,7 +18,7 @@ const productController = {
                 related: related || [] 
             });
         } else {
-            res.status(404).send('Producto no encontrado');
+            res.status(404).render('404');
         }
     }
 };
