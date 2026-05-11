@@ -1,158 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <%- include('./partials/header') %>
-<body>
-    <main class="cart-main">
-        <div class="cart-container-page">
-            <div class="cart-header-actions">
-                <a href="/" class="btn-back">← Volver al listado</a>
-            </div>
-            
-            <h2 class="cart-title">Productos en tu Carrito</h2>
 
-            <div class="cart-items">
-                <!-- Item 1 -->
-                <article class="cart-item">
-                    <img src="/img/ryzen7.jpg" alt="AMD Ryzen 7">
-                    <div class="cart-item-name">
-                        <h4>AMD Ryzen 7 5800X</h4>
-                    </div>
-                    <div class="cart-item-actions">
-                        <button class="btn-remove">Quitar</button>
-                        <div class="quantity-control">
-                            <button class="btn-qty btn-minus">-</button>
-                            <span class="quantity">1</span>
-                            <button class="btn-qty btn-plus">+</button>
+    <body>
+        <main class="cart-main">
+            <div class="cart-container-page">
+                <div class="cart-header-actions">
+                    <a href="/" class="btn-back">← Volver al listado</a>
+                </div>
+
+                <h2 class="cart-title">Tu Carrito de Compras</h2>
+
+                <% if (cartProducts && cartProducts.length> 0) { %>
+                    <div class="cart-grid">
+                        <div class="cart-items-column">
+                            <div class="cart-items">
+                                <% cartProducts.forEach(item=> { %>
+                                    <article class="cart-item">
+                                        <div class="item-main-info">
+                                            <img src="<%= item.image %>" alt="<%= item.name %>">
+                                            <div class="cart-item-name">
+                                                <h4>
+                                                    <%= item.name %>
+                                                </h4>
+                                                <p style="font-size: 0.8rem; color: #888;">Cod: #00<%= item.id %>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="cart-item-actions">
+                                            <div class="quantity-control">
+                                                <form action="/cart/decrease/<%= item.id %>" method="POST">
+                                                    <button type="submit" class="btn-qty btn-minus"><i
+                                                            class="fas fa-minus"></i></button>
+                                                </form>
+                                                <span class="quantity">
+                                                    <%= item.quantity %>
+                                                </span>
+                                                <form action="/cart/increase/<%= item.id %>" method="POST">
+                                                    <button type="submit" class="btn-qty btn-plus"><i
+                                                            class="fas fa-plus"></i></button>
+                                                </form>
+                                            </div>
+                                            <div class="cart-item-price">
+                                                <span class="points">$<%= item.subtotal.toLocaleString() %></span>
+                                            </div>
+                                            <form action="/cart/remove/<%= item.id %>" method="POST">
+                                                <button type="submit" class="btn-remove" title="Quitar producto"><i
+                                                        class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                    <% }) %>
+                            </div>
+                            <div class="cart-footer-actions">
+                                <form action="/cart/clear" method="POST">
+                                    <button type="submit" class="btn-vaciar">Vaciar Carrito</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                    <div class="cart-item-price">
-                        <span class="points">350.000</span>
-                    </div>
-                </article>
 
-                <!-- Item 2 -->
-                <article class="cart-item">
-                    <img src="/img/rtx.jpg" alt="Placa de Video RTX 4060">
-                    <div class="cart-item-name">
-                        <h4>Nvidia GeForce RTX 4060 Ti</h4>
+                        <aside class="cart-summary-premium">
+                            <h3 class="summary-title">Resumen de Compra</h3>
+                            <div class="summary-row">
+                                <span>Productos (<%= cartCount %>)</span>
+                                <span>$<%= total.toLocaleString() %></span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Envío</span>
+                                <span style="color: #00e676;">Gratis</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total</span>
+                                <span>$<%= total.toLocaleString() %></span>
+                            </div>
+
+                            <a href="/checkout" class="btn-checkout"
+                                style="width: 100%; text-align: center; margin-top: 20px;">Continuar Compra</a>
+                        </aside>
                     </div>
-                    <div class="cart-item-actions">
-                        <button class="btn-remove">Quitar</button>
-                        <div class="quantity-control">
-                            <button class="btn-qty btn-minus">-</button>
-                            <span class="quantity">1</span>
-                            <button class="btn-qty btn-plus">+</button>
+                    <% } else { %>
+                        <div class="empty-cart-message">
+                            <i class="fas fa-shopping-basket"
+                                style="font-size: 4rem; color: #333; margin-bottom: 20px;"></i>
+                            <p>Parece que aún no has agregado nada.</p>
+                            <a href="/" class="btn-checkout" style="font-size: 1rem; padding: 10px 30px;">Explorar
+                                Productos</a>
                         </div>
-                    </div>
-                    <div class="cart-item-price">
-                        <span class="points">420.000</span>
-                    </div>
-                </article>
+                        <% } %>
             </div>
+        </main>
+        <%- include('./partials/footer') %>
+    </body>
 
-            <!-- Bonus: Cupón de descuento -->
-            <div class="cart-discount">
-                <label for="cupon">Código de descuento:</label>
-                <div class="discount-input-group">
-                    <input type="text" id="cupon" placeholder="Ingresá tu código alfaumérico">
-                    <button class="btn-apply-discount">Aplicar</button>
-                </div>
-            </div>
-
-            <!-- Resumen -->
-            <div class="cart-summary">
-                <div class="total-row">
-                    <span>Total de Puntos</span>
-                    <span class="total-points">770.000</span>
-                </div>
-                <div class="cart-actions">
-                    <a href="/checkout" class="btn-checkout">Ir a Pagar</a>
-                </div>
-            </div>
-        </div>
-    </main>
-    <%- include('./partials/footer') %>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const formatNumber = (num) => num.toLocaleString('es-AR').replace(/,/g, '.');
-            const parseNumber = (str) => parseInt(str.replace(/\./g, ''), 10);
-
-            const cartItemsContainer = document.querySelector('.cart-items');
-            const totalPointsDisplay = document.querySelector('.total-points');
-
-            // Guardamos el precio unitario base en el elemento DOM de cada producto
-            document.querySelectorAll('.cart-item').forEach(item => {
-                const priceElement = item.querySelector('.points');
-                if(priceElement) {
-                    const basePrice = parseNumber(priceElement.innerText);
-                    item.dataset.basePrice = basePrice;
-                }
-            });
-
-            // Función para recalcular el precio total general y de cada ítem
-            const updateTotal = () => {
-                let total = 0;
-                document.querySelectorAll('.cart-item').forEach(item => {
-                    const qty = parseInt(item.querySelector('.quantity').innerText, 10);
-                    const basePrice = parseInt(item.dataset.basePrice, 10);
-                    
-                    const subtotal = qty * basePrice;
-                    item.querySelector('.points').innerText = formatNumber(subtotal);
-                    
-                    total += subtotal;
-                });
-                
-                if (totalPointsDisplay) {
-                    totalPointsDisplay.innerText = formatNumber(total);
-                }
-                
-                // Mostrar mensaje de carrito vacío si ya no hay elementos
-                if(document.querySelectorAll('.cart-item').length === 0) {
-                    cartItemsContainer.innerHTML = '<p style="text-align:center; color:#aaa; width:100%; padding:20px;">Tu carrito está vacío.</p>';
-                }
-            };
-
-            // Asegurarse de que el contenedor existe
-            if(cartItemsContainer) {
-                cartItemsContainer.addEventListener('click', (e) => {
-                    const item = e.target.closest('.cart-item');
-                    if(!item) return;
-
-                    if(e.target.closest('.btn-plus')) {
-                        const qtyElement = item.querySelector('.quantity');
-                        qtyElement.innerText = parseInt(qtyElement.innerText, 10) + 1;
-                        updateTotal();
-                    } 
-                    else if (e.target.closest('.btn-minus')) {
-                        const qtyElement = item.querySelector('.quantity');
-                        let currentQty = parseInt(qtyElement.innerText, 10);
-                        if (currentQty > 1) {
-                            qtyElement.innerText = currentQty - 1;
-                            updateTotal();
-                        }
-                    } 
-                    else if (e.target.closest('.btn-remove')) {
-                        item.remove();
-                        updateTotal();
-                    }
-                });
-            }
-
-            // Aplicar cupón de descuento
-            const btnApply = document.querySelector('.btn-apply-discount');
-            if(btnApply) {
-                btnApply.addEventListener('click', () => {
-                    const inputGroup = document.getElementById('cupon');
-                    const code = inputGroup.value.trim();
-                    if (code !== '') {
-                        alert('Cupón "' + code + '" simulado/aplicado con éxito.');
-                        inputGroup.value = '';
-                    } else {
-                        alert('Por favor, ingresá un código válido.');
-                    }
-                });
-            }
-        });
-    </script>
-</body>
 </html>

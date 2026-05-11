@@ -22,7 +22,9 @@
             <div class="info-column">
                 <h2><%= product.name %></h2>
                 <div class="product-price">$<%= product.price.toLocaleString() %></div>
-                <button class="btn-add-cart">Agregar al Carrito</button>
+                <form action="/cart/add/<%= product.id %>" method="POST">
+                    <button type="submit" class="btn-add-cart">Agregar al Carrito</button>
+                </form>
                 
                 <div class="product-description">
                     <p><%= product.description %></p>
@@ -52,6 +54,37 @@
             </section>
         <% } %>
     </main>
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-check-circle" style="color: #00e676; font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>¡Producto Agregado!</h3>
+                <p>El producto <strong><%= product.name %></strong> se añadió a tu carrito.</p>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal()" class="btn-secondary">Seguir Comprando</button>
+                <a href="/cart" class="btn-primary">Ver Carrito</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeModal() {
+            document.getElementById('addModal').style.display = 'none';
+            // Limpiar la URL sin recargar la página
+            const url = new URL(window.location);
+            url.searchParams.delete('added');
+            window.history.replaceState({}, '', url);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('added') === 'true') {
+                document.getElementById('addModal').style.display = 'flex';
+            }
+        });
+    </script>
     <%- include('./partials/footer') %>
 </body>
 </html>

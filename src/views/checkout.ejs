@@ -2,22 +2,18 @@
 <html lang="es">
 <%- include('./partials/header') %>
 <body>
-    <main>
-        <section class="checkout-container" style="max-width: 600px; margin: 0 auto; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333;">
-            <h2 style="color: #00c8ff; border-bottom: 1px solid #333; padding-bottom: 15px;">Finalizar Compra</h2>
+    <main class="checkout-main">
+        <section class="checkout-card" style="text-align: center;">
+            <i class="fas fa-tools" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="border: none; margin-bottom: 10px;">¡Próximamente!</h2>
+            <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 40px;">
+                Checkout disponible en el próximo sprint. Estamos trabajando para brindarte la mejor experiencia de compra.
+            </p>
             
-            <div class="summary" style="margin: 20px 0;">
-                <p style="display: flex; justify-content: space-between;"><span>Subtotal:</span> <span>$350.000</span></p>
-                <p style="display: flex; justify-content: space-between;"><span>Envío:</span> <span style="color: #00ff00;">Gratis</span></p>
-                <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
-                <p style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;"><span>Total:</span> <span>$350.000</span></p>
+            <div class="modal-actions" style="flex-direction: column; gap: 15px;">
+                <a href="/cart" class="btn-primary" style="width: 100%; text-align: center;">Volver al carrito</a>
+                <a href="/" class="btn-secondary" style="width: 100%; text-align: center;">Volver al inicio</a>
             </div>
-
-            <form action="/" method="GET" style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="text" placeholder="Dirección de envío" style="padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px;">
-                <input type="text" placeholder="Tarjeta de crédito (Mock)" style="padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px;">
-                <button type="submit" style="background: #00c8ff; border: none; padding: 15px; font-weight: bold; cursor: pointer; border-radius: 4px;">PAGAR AHORA</button>
-            </form>
         </section>
     </main>
     <%- include('./partials/footer') %>
