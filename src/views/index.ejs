@@ -25,49 +25,74 @@
             <!-- SECCIÓN CATEGORÍAS (Debajo de beneficios) -->
             <section class="categories-section">
                 <div class="categories-grid">
-                    <article class="category-item">
+                    <a href="/categories/Procesadores" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-microchip"></i>
                         <span>Procesadores</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Monitores" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-desktop"></i>
                         <span>Monitores</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Memorias RAM" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-memory"></i>
                         <span>Memorias RAM</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Notebooks" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-laptop"></i>
                         <span>Notebooks</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Almacenamiento" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-hdd"></i>
                         <span>Almacenamiento</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Fuentes" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-plug"></i>
                         <span>Fuentes</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Perifericos" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-keyboard"></i>
                         <span>Periféricos</span>
-                    </article>
-                    <article class="category-item">
+                    </a>
+                    <a href="/categories/Placas de Video" class="category-item" style="text-decoration: none; color: inherit;">
                         <i class="fas fa-video"></i>
                         <span>Placas de Video</span>
-                    </article>
+                    </a>
                 </div>
             </section>
 
-            <!-- LISTADO DE PRODUCTOS -->
+            <!-- LOS MÁS PEDIDOS -->
+            <section class="productos-section">
+                <h2 style="text-align: center; margin: 40px 0; color: #00c8ff;">Los más pedidos</h2>
+                <div class="productos-container">
+                    <% mostRequested.forEach(product => { %>
+                        <a href="/products/<%= product.id %>" class="product-card" style="text-decoration: none;">
+                            <div class="product-img-box" style="position: relative;">
+                                <% if (product.stock === 0) { %>
+                                    <span style="position: absolute; top: 10px; right: 10px; background-color: #ff4d6d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;">Sin stock</span>
+                                <% } %>
+                                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="<%= product.name %>">
+                            </div>
+                            <div class="product-info">
+                                <p class="price">$<%= product.price.toLocaleString() %></p>
+                                <h4 class="name"><%= product.name %></h4>
+                                <button class="boton-comprar">Ver Detalle</button>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </section>
+
+            <!-- TE PUEDE INTERESAR -->
             <section class="productos-section">
                 <h2 style="text-align: center; margin: 40px 0; color: #00c8ff;">Te puede interesar</h2>
                 <div class="productos-container">
                     <% products.forEach(product => { %>
                         <a href="/products/<%= product.id %>" class="product-card" style="text-decoration: none;">
-                            <div class="product-img-box">
-                                <img src="<%= product.image %>" alt="<%= product.name %>">
+                            <div class="product-img-box" style="position: relative;">
+                                <% if (product.stock === 0) { %>
+                                    <span style="position: absolute; top: 10px; right: 10px; background-color: #ff4d6d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;">Sin stock</span>
+                                <% } %>
+                                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="<%= product.name %>">
                             </div>
                             <div class="product-info">
                                 <p class="price">$<%= product.price.toLocaleString() %></p>

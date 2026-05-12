@@ -10,7 +10,10 @@ const productController = {
         if (product) {
             const allProducts = productModel.findAll();
             // Filtrar productos de la misma categoría, excluyendo el actual
-            const related = allProducts.filter(p => p.category === product.category && p.id !== product.id);
+            let related = allProducts.filter(p => p.category === product.category && p.id !== product.id);
+            
+            // Mezclar si hay más de 4 y seleccionar hasta 4 (Escenarios 1 y 2)
+            related = related.sort(() => 0.5 - Math.random()).slice(0, 4);
             
             // Asegurarnos de que related siempre sea un array, aunque esté vacío
             res.render('productDetail', { 

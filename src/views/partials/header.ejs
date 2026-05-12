@@ -21,9 +21,7 @@
         <div class="user-nav desktop-only">
             <a href="/cart" class="cart-container">
                 <i class="fas fa-shopping-cart"></i>
-                <% if (locals.cartCount > 0) { %>
-                    <span class="badge"><%= cartCount %></span>
-                <% } %>
+                <span class="badge"><%= locals.cartCount !== undefined ? locals.cartCount : 0 %></span>
             </a>
             <div class="user-profile">
                 <img src="/img/avatar.png" alt="Avatar" class="avatar">
@@ -34,7 +32,7 @@
         <div class="mobile-cart-icon mobile-only">
             <a href="/cart" class="cart-container">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="badge">3</span>
+                <span class="badge"><%= locals.cartCount !== undefined ? locals.cartCount : 0 %></span>
             </a>
         </div>
     </div>

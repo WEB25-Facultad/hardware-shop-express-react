@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('partials/header') %>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --accent-color: #00d2ff;
+                --neon-pink: #ff007f;
+                --deep-blue: #0a0b1e;
+                --glass-bg: rgba(15, 15, 35, 0.8);
+            }
+
+            .error-page-wrapper {
+                background-color: var(--deep-blue);
+                background-image: 
+                    radial-gradient(circle at 50% 50%, rgba(255, 0, 127, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(0, 210, 255, 0.1) 0%, transparent 40%);
+                min-height: 85vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Outfit', sans-serif;
+                overflow: hidden;
+                position: relative;
+                padding: 2rem;
+            }
+
+            .error-container {
+                max-width: 700px;
+                width: 100%;
+                text-align: center;
+                z-index: 2;
+                padding: 4rem 2rem;
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                border-radius: 40px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7);
+            }
+
+            .glitch-code {
+                font-size: 10rem;
+                font-weight: 900;
+                color: #fff;
+                margin: 0;
+                line-height: 1;
+                position: relative;
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--accent-color);
+                animation: glitch 1s infinite;
+            }
+
+            .error-title {
+                font-size: 2rem;
+                color: #fff;
+                margin: 2rem 0 1rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+            .error-desc {
+                font-size: 1.2rem;
+                color: rgba(255, 255, 255, 0.7);
+                line-height: 1.6;
+                margin-bottom: 3rem;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .actions-row {
+                display: flex;
+                gap: 1.5rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .btn-premium {
+                padding: 1.2rem 2.5rem;
+                border-radius: 16px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                display: inline-flex;
+                align-items: center;
+                gap: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-size: 0.9rem;
+            }
+
+            .btn-primary-neon {
+                background: linear-gradient(135deg, var(--accent-color), #3a7bd5);
+                color: var(--deep-blue);
+                box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            }
+
+            .btn-primary-neon:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 210, 255, 0.5);
+                filter: brightness(1.1);
+            }
+
+            .btn-outline-neon {
+                background: transparent;
+                color: #fff;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .btn-outline-neon:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: var(--neon-pink);
+                color: var(--neon-pink);
+                transform: translateY(-5px);
+            }
+
+            /* Animations */
+            @keyframes glitch {
+                0% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--accent-color); }
+                14% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--accent-color); }
+                15% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--accent-color); }
+                49% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--accent-color); }
+                50% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--accent-color); }
+                99% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--accent-color); }
+                100% { text-shadow: -0.025em 0 0 var(--neon-pink), -0.025em -0.025em 0 var(--accent-color); }
+            }
+
+            @media (max-width: 768px) {
+                .glitch-code { font-size: 7rem; }
+                .error-title { font-size: 1.5rem; }
+                .error-container { padding: 3rem 1.5rem; }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="error-page-wrapper">
+            <div class="error-container">
+                <h1 class="glitch-code" style="animation-duration: 0.5s;">500</h1>
+                <h2 class="error-title">Error Interno del Servidor</h2>
+                <p class="error-desc">
+                    ¡Ups! Algo salió mal de nuestro lado. Estamos trabajando para solucionarlo lo antes posible. Por favor, intenta de nuevo más tarde.
+                </p>
+                
+                <div class="actions-row">
+                    <a href="/" class="btn-premium btn-primary-neon">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <%- include('partials/footer') %>
+    </body>
+</html>

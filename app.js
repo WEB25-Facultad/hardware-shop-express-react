@@ -48,8 +48,27 @@ app.use('/cart', cartRoutes);
 
 // Inicio
 app.get('/', (req, res) => {
-    const products = productModel.findAll();
-    res.render('index', { products });
+    const allProducts = productModel.findAll();
+    
+    // "Te puede interesar": 5 productos aleatorios
+    const products = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 5);
+    
+    // "Los más pedidos": marcados con un flag y aleatorios (hasta 10)
+    const mostRequested = allProducts
+        .filter(p => p.mostRequested)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 10);
+        
+    res.render('index', { products, mostRequested });
+});
+
+// Categorías
+app.get('/categories/:category', (req, res) => {
+    const categoryName = req.params.category;
+    const allProducts = productModel.findAll();
+    // Filtramos ignorando mayúsculas/minúsculas para ser más robustos
+    const products = allProducts.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+    res.render('category', { categoryName, products });
 });
 
 // Proceso de Pago
@@ -70,6 +89,12 @@ app.get('/login', (req, res) => {
 // 4. Manejo de Error 404 (Debe ir después de todas las rutas)
 app.use((req, res) => {
     res.status(404).render('404');
+});
+
+// 5. Manejo de Error 500 (Debe ir al final de todo)
+app.use((err, req, res, next) => {
+    console.error('Error interno del servidor:', err.stack);
+    res.status(500).render('500');
 });
 
 // 4. Servidor

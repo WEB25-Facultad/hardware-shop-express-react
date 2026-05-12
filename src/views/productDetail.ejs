@@ -10,20 +10,28 @@
         <section class="detail-card">
             <div class="gallery-column">
                 <div class="thumbnails">
-                    <img src="<%= product.image %>" alt="Thumb 1" class="thumb-image active">
-                    <img src="<%= product.image %>" alt="Thumb 2" class="thumb-image">
-                    <img src="<%= product.image %>" alt="Thumb 3" class="thumb-image">
+                    <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 1" class="thumb-image active">
+                    <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 2" class="thumb-image">
+                    <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 3" class="thumb-image">
                 </div>
-                <div class="main-image-container">
-                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                <div class="main-image-container" style="position: relative;">
+                    <% if (product.stock === 0) { %>
+                        <span style="position: absolute; top: 15px; right: 15px; background-color: #ff4d6d; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 1rem; z-index: 2; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);">Sin stock</span>
+                    <% } %>
+                    <img src="<%= product.image || '/img/no-image.jpg' %>" alt="<%= product.name %>">
                 </div>
             </div>
 
             <div class="info-column">
-                <h2><%= product.name %></h2>
-                <div class="product-price">$<%= product.price.toLocaleString() %></div>
+                <p style="color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><%= product.category %></p>
+                <h2 style="margin-top: 0;"><%= product.name %></h2>
+                <div class="product-price">
+                    $<%= product.price.toLocaleString() %>
+                </div>
                 <form action="/cart/add/<%= product.id %>" method="POST">
-                    <button type="submit" class="btn-add-cart">Agregar al Carrito</button>
+                    <button type="submit" class="btn-add-cart" <%= product.stock === 0 ? 'disabled style="background-color: #333; cursor: not-allowed; color: #888; box-shadow: none; transform: none;"' : '' %>>
+                        <%= product.stock === 0 ? 'Sin stock' : 'Agregar al Carrito' %>
+                    </button>
                 </form>
                 
                 <div class="product-description">
@@ -34,24 +42,29 @@
         </section>
 
         <!-- PRODUCTOS RELACIONADOS -->
+        <h3 class="related-title" style="margin-top: 40px; color: #00c8ff;">Productos relacionados</h3>
         <% if (locals.related && related.length > 0) { %>
-            <h3 class="related-title">También te puede interesar</h3>
             <section class="productos-container" style="margin-bottom: 50px;">
                 <% related.forEach(relatedProduct => { %>
-                    <article class="product-card">
-                        <a href="/products/<%= relatedProduct.id %>" style="text-decoration: none; color: inherit;">
-                            <div class="product-img-box">
-                                <img src="<%= relatedProduct.image %>" alt="<%= relatedProduct.name %>">
-                            </div>
-                            <div class="product-info">
-                                <p class="price">$<%= relatedProduct.price.toLocaleString() %></p>
-                                <h4 class="name"><%= relatedProduct.name %></h4>
-                                <button class="boton-comprar">Ver Detalle</button>
-                            </div>
-                        </a>
-                    </article>
+                    <a href="/products/<%= relatedProduct.id %>" class="product-card" style="text-decoration: none;">
+                        <div class="product-img-box" style="position: relative;">
+                            <% if (relatedProduct.stock === 0) { %>
+                                <span style="position: absolute; top: 10px; right: 10px; background-color: #ff4d6d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;">Sin stock</span>
+                            <% } %>
+                            <img src="<%= relatedProduct.image || '/img/no-image.jpg' %>" alt="<%= relatedProduct.name %>">
+                        </div>
+                        <div class="product-info">
+                            <p class="price">$<%= relatedProduct.price.toLocaleString() %></p>
+                            <h4 class="name"><%= relatedProduct.name %></h4>
+                            <button class="boton-comprar">Ver Detalle</button>
+                        </div>
+                    </a>
                 <% }) %>
             </section>
+        <% } else { %>
+            <div style="text-align: center; margin-bottom: 50px; padding: 20px; background-color: var(--card-bg); border-radius: 10px; color: var(--text-muted);">
+                <p>No hay productos relacionados disponibles en este momento.</p>
+            </div>
         <% } %>
     </main>
     <!-- MODAL DE CONFIRMACIÓN -->

@@ -29,7 +29,12 @@ const cartController = {
 
     add: (req, res) => {
         const productId = parseInt(req.params.id);
+        const product = productModel.findById(productId);
         
+        if (!product || product.stock === 0) {
+            return res.redirect('back');
+        }
+
         if (!req.session.cart) {
             req.session.cart = [];
         }
@@ -52,6 +57,12 @@ const cartController = {
 
     increase: (req, res) => {
         const productId = parseInt(req.params.id);
+        const product = productModel.findById(productId);
+        
+        if (!product || product.stock === 0) {
+            return res.redirect('/cart');
+        }
+
         const productIndex = req.session.cart.findIndex(item => item.productId === productId);
 
         if (productIndex !== -1) {

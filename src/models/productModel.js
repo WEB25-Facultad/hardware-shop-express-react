@@ -5,7 +5,9 @@ const products = [
         price: 350000,
         description: "Procesador de alto rendimiento para gaming y productividad.",
         image: "/img/ryzen7.jpg",
-        category: "Procesadores"
+        category: "Procesadores",
+        mostRequested: true,
+        stock: 0
     },
     {
         id: 2,
@@ -13,7 +15,8 @@ const products = [
         price: 800000,
         description: "Tarjeta gráfica potente para gaming en 4K.",
         image: "/img/rtx.jpg",
-        category: "Placas de Video"
+        category: "Placas de Video",
+        mostRequested: true
     },
     {
         id: 3,
@@ -21,7 +24,9 @@ const products = [
         price: 90000,
         description: "Memoria RAM rápida y confiable.",
         image: "/img/vengeance.jpg",
-        category: "Memorias RAM"
+        category: "Memorias RAM",
+        mostRequested: true,
+        stock: 0
     },
     {
         id: 4,
@@ -29,7 +34,8 @@ const products = [
         price: 120000,
         description: "SSD NVMe ultra rápido.",
         image: "/img/samsung.jpg",
-        category: "Almacenamiento"
+        category: "Almacenamiento",
+        mostRequested: true
     },
     {
         id: 5,
@@ -37,7 +43,8 @@ const products = [
         price: 650000,
         description: "Monitor Gaming de 27 pulgadas, 165Hz.",
         image: "/img/asus_monitor.jpg",
-        category: "Monitores"
+        category: "Monitores",
+        mostRequested: true
     },
     {
         id: 6,
@@ -45,7 +52,8 @@ const products = [
         price: 2500000,
         description: "La laptop más potente de Apple con chip M3.",
         image: "/img/macbook.jpg",
-        category: "Notebooks"
+        category: "Notebooks",
+        mostRequested: true
     },
     {
         id: 7,
@@ -53,7 +61,8 @@ const products = [
         price: 150000,
         description: "Mouse inalámbrico ultra liviano para profesionales.",
         image: "/img/logitech_mouse.jpg",
-        category: "Periféricos"
+        category: "Periféricos",
+        mostRequested: true
     },
     {
         id: 8,
@@ -77,7 +86,8 @@ const products = [
         price: 950000,
         description: "La GPU más potente de AMD para gaming extremo.",
         image: "/img/amd_gpu.jpg",
-        category: "Placas de Video"
+        category: "Placas de Video",
+        mostRequested: true
     },
     {
         id: 11,
