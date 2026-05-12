@@ -13,10 +13,10 @@
 
         <a href="/" class="logo">HARDWARE<span>STORE</span></a>
         
-        <div class="search-bar">
-            <input type="text" placeholder="Buscar componentes de hardware..." class="input-search">
-            <button class="btn-search"><i class="fas fa-search"></i></button>
-        </div>
+        <form action="/search" method="GET" class="search-bar">
+            <input type="text" name="query" placeholder="Buscar componentes de hardware..." class="input-search">
+            <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+        </form>
 
         <div class="user-nav desktop-only">
             <a href="/cart" class="cart-container">

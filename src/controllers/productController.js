@@ -1,26 +1,30 @@
-const productModel = require('../models/productModel');
+const productsService = require('../services/productsService');
 
 const productController = {
     index: (req, res) => {
-        const products = productModel.findAll();
+        const sortQuery = req.query.sort; // Capturamos el query param ?sort=...
+        const products = productsService.findAll(sortQuery);
         res.render('products', { products });
     },
     detail: (req, res) => {
-        const product = productModel.findById(req.params.id);
+        const normalizedId = productsService.normalizeId(req.params.id);
+        
+        // Si no es un número válido, retornar 400 (Bad Request)
+        if (!normalizedId) {
+            return res.status(400).send('400 - Bad Request: El ID ingresado no es válido.');
+        }
+
+        const product = productsService.findById(normalizedId);
+        
         if (product) {
-            const allProducts = productModel.findAll();
-            // Filtrar productos de la misma categoría, excluyendo el actual
-            let related = allProducts.filter(p => p.category === product.category && p.id !== product.id);
+            const related = productsService.getRelatedProducts(product);
             
-            // Mezclar si hay más de 4 y seleccionar hasta 4 (Escenarios 1 y 2)
-            related = related.sort(() => 0.5 - Math.random()).slice(0, 4);
-            
-            // Asegurarnos de que related siempre sea un array, aunque esté vacío
             res.render('productDetail', { 
                 product: product, 
-                related: related || [] 
+                related: related 
             });
         } else {
+            // Si el ID es numérico pero no existe, retornar 404 (Not Found)
             res.status(404).render('404');
         }
     }

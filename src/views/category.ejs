@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<%- include('./partials/header') %>
-<body>
+
     <main>
         <section class="categories-section" style="margin-top: 20px;">
             <div class="breadcrumb" style="margin-bottom: 30px;">
@@ -34,13 +31,17 @@
         <% } else { %>
             <div style="text-align: center; margin-top: 50px; padding: 40px; background-color: var(--card-bg); border-radius: 10px; color: var(--text-muted);">
                 <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary);"></i>
-                <h3>No hay productos en esta categoría</h3>
-                <p>Actualmente no contamos con productos disponibles para la categoría "<strong><span style="text-transform: capitalize;"><%= categoryName %></span></strong>".</p>
+                
+                <% if (locals.isSearch) { %>
+                    <h3>No se encontraron productos</h3>
+                    <p>No hay coincidencias para la búsqueda "<strong><%= locals.searchQuery %></strong>". Intenta con otra palabra.</p>
+                <% } else { %>
+                    <h3>No hay productos en esta categoría</h3>
+                    <p>Actualmente no contamos con productos disponibles para la categoría "<strong><span style="text-transform: capitalize;"><%= categoryName %></span></strong>".</p>
+                <% } %>
+                
                 <a href="/" class="btn-primary" style="display: inline-block; margin-top: 20px; text-decoration: none;">Volver al Inicio</a>
             </div>
         <% } %>
     </main>
 
-    <%- include('./partials/footer') %>
-</body>
-</html>

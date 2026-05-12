@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const session = require('express-session');
-const productModel = require('./src/models/productModel');
+const expressLayouts = require('express-ejs-layouts');
+const productsService = require('./src/services/productsService');
+const cartService = require('./src/services/cartService');
 
 // Rutas
 const productRoutes = require('./src/routes/productRoute');
@@ -11,6 +13,8 @@ const cartRoutes = require('./src/routes/cartRoute');
 // 1. Configuración del Motor de Plantillas (EJS)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
 
 // 2. Carpeta de archivos estáticos (CSS, Imágenes)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -25,19 +29,12 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// Middleware para inicializar el carrito en la sesión si no existe y pasar datos a todas las vistas
+// Middleware para inicializar el carrito en la sesión y pasar datos a todas las vistas
 app.use((req, res, next) => {
-    if (!req.session.cart) {
-        req.session.cart = [];
-    }
-    // Calculamos la cantidad total de productos (suma de quantities)
-    res.locals.cartCount = req.session.cart.reduce((total, item) => total + item.quantity, 0);
+    cartService.initializeCart(req.session);
     
-    // Calculamos el precio total general
-    res.locals.cartTotal = req.session.cart.reduce((total, item) => {
-        const product = productModel.findById(item.productId);
-        return total + (product ? product.price * item.quantity : 0);
-    }, 0);
+    res.locals.cartCount = cartService.calculateItemCount(req.session);
+    res.locals.cartTotal = cartService.calculateTotal(req.session);
 
     next();
 });
@@ -48,27 +45,23 @@ app.use('/cart', cartRoutes);
 
 // Inicio
 app.get('/', (req, res) => {
-    const allProducts = productModel.findAll();
-    
-    // "Te puede interesar": 5 productos aleatorios
-    const products = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 5);
-    
-    // "Los más pedidos": marcados con un flag y aleatorios (hasta 10)
-    const mostRequested = allProducts
-        .filter(p => p.mostRequested)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 10);
-        
-    res.render('index', { products, mostRequested });
+    const { recommended, mostRequested } = productsService.getProductsForHome();
+    res.render('index', { products: recommended, mostRequested });
 });
 
 // Categorías
 app.get('/categories/:category', (req, res) => {
     const categoryName = req.params.category;
-    const allProducts = productModel.findAll();
-    // Filtramos ignorando mayúsculas/minúsculas para ser más robustos
-    const products = allProducts.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+    const products = productsService.getProductsByCategory(categoryName);
     res.render('category', { categoryName, products });
+});
+
+// Búsqueda
+app.get('/search', (req, res) => {
+    const query = req.query.query || '';
+    const products = productsService.searchByName(query);
+    // Reutilizamos la vista de categoría para mostrar resultados de búsqueda
+    res.render('category', { categoryName: `Resultados para "${query}"`, products, isSearch: true, searchQuery: query });
 });
 
 // Proceso de Pago
@@ -78,12 +71,12 @@ app.get('/checkout', (req, res) => {
 
 // Registro de Usuario
 app.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', { layout: false });
 });
 
 // Inicio de Sesión
 app.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', { layout: false });
 });
 
 // 4. Manejo de Error 404 (Debe ir después de todas las rutas)
