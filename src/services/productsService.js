@@ -1,74 +1,91 @@
-const productModel = require('../models/productModel');
+const db = require('../../db/database');
+
+// Función auxiliar para mapear los tipos de datos devueltos por SQLite a los esperados por JS
+const mapProduct = (row) => {
+    if (!row) return null;
+    return {
+        ...row,
+        // En SQLite el boolean se guarda como 0 o 1. Lo pasamos a true/false para mantener la interfaz.
+        mostRequested: Boolean(row.mostRequested)
+    };
+};
 
 const productsService = {
     // Normalizar ID
     normalizeId: (idParam) => {
         const id = Number(idParam);
         if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
-            return null; // Retorna null si no es un número válido
+            return null;
         }
         return id;
     },
 
-    // Obtener todos los productos (con opción de ordenamiento)
+    // Obtener todos los productos desde SQLite (con opción de ordenamiento en la propia query SQL)
     findAll: (sortQuery = null) => {
-        const products = productModel.findAll();
+        let query = 'SELECT * FROM products';
         
-        // Si no hay ordenamiento, retornamos tal cual (o copiamos para seguridad)
-        let result = [...products];
-
+        // Delegamos el ordenamiento directamente al motor de base de datos
         if (sortQuery === 'asc') {
-            result.sort((a, b) => a.price - b.price);
+            query += ' ORDER BY price ASC';
         } else if (sortQuery === 'desc') {
-            result.sort((a, b) => b.price - a.price);
+            query += ' ORDER BY price DESC';
         }
 
-        return result;
+        const rows = db.prepare(query).all();
+        return rows.map(mapProduct);
     },
 
-    // Buscar productos por nombre (coincidencia parcial, ignorando mayúsculas/minúsculas)
+    // Buscar productos por nombre usando SQL LIKE
     searchByName: (query) => {
         if (!query) return [];
-        const allProducts = productModel.findAll();
-        const searchLower = query.toLowerCase().trim();
-        return allProducts.filter(p => p.name.toLowerCase().includes(searchLower));
+        // Se usan parámetros vinculados (?) para prevenir inyección SQL
+        const stmt = db.prepare('SELECT * FROM products WHERE name LIKE ?');
+        const rows = stmt.all(`%${query}%`);
+        return rows.map(mapProduct);
     },
 
     // Buscar un producto por su ID
     findById: (id) => {
-        return productModel.findById(id);
+        const stmt = db.prepare('SELECT * FROM products WHERE id = ?');
+        // get() retorna un solo objeto (o undefined si no existe)
+        const row = stmt.get(id);
+        return mapProduct(row);
     },
 
-    // Obtener productos relacionados (misma categoría, distinto ID)
+    // Obtener hasta 4 productos relacionados aleatorios (misma categoría, distinto ID)
     getRelatedProducts: (product) => {
         if (!product) return [];
-        const allProducts = productModel.findAll();
-        let related = allProducts.filter(p => p.category === product.category && p.id !== product.id);
         
-        // Mezclar si hay más de 4 y seleccionar hasta 4
-        return related.sort(() => 0.5 - Math.random()).slice(0, 4);
+        const stmt = db.prepare(`
+            SELECT * FROM products 
+            WHERE category = ? AND id != ? 
+            ORDER BY RANDOM() 
+            LIMIT 4
+        `);
+        const rows = stmt.all(product.category, product.id);
+        return rows.map(mapProduct);
     },
 
-    // Obtener productos para el Home (recomendados y más pedidos)
+    // Obtener productos para el Home (recomendados y más pedidos aleatorios)
     getProductsForHome: () => {
-        const allProducts = productModel.findAll();
-        
         // "Te puede interesar": 5 productos aleatorios
-        const recommended = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const recommendedRows = db.prepare('SELECT * FROM products ORDER BY RANDOM() LIMIT 5').all();
         
-        // "Los más pedidos": marcados con un flag y aleatorios (hasta 10)
-        const mostRequested = allProducts
-            .filter(p => p.mostRequested)
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 10);
+        // "Los más pedidos": hasta 10 productos con el flag encendido
+        const mostRequestedRows = db.prepare('SELECT * FROM products WHERE mostRequested = 1 ORDER BY RANDOM() LIMIT 10').all();
             
-        return { recommended, mostRequested };
+        return {
+            recommended: recommendedRows.map(mapProduct),
+            mostRequested: mostRequestedRows.map(mapProduct)
+        };
     },
 
-    // Filtrar productos por categoría
+    // Filtrar productos por categoría exacto
     getProductsByCategory: (categoryName) => {
-        const allProducts = productModel.findAll();
-        return allProducts.filter(p => p.category.toLowerCase() === categoryName.toLowerCase());
+        // COLLATE NOCASE asegura que la comparación ignore mayúsculas y minúsculas nativamente en SQLite
+        const stmt = db.prepare('SELECT * FROM products WHERE category COLLATE NOCASE = ?');
+        const rows = stmt.all(categoryName);
+        return rows.map(mapProduct);
     }
 };
 
