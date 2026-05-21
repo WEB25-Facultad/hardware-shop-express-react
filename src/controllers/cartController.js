@@ -13,9 +13,8 @@ const cartController = {
     },
 
     add: (req, res) => {
-        const productId = productsService.normalizeId(req.params.id);
-        if (!productId) return res.status(400).send('Bad Request: ID inválido');
-        
+        // La validación 400 y 404 de ID ya la hizo el middleware
+        const productId = req.normalizedId;
         const success = cartService.addProduct(req.session, productId);
         
         if (!success) {
@@ -26,20 +25,17 @@ const cartController = {
     },
 
     increase: (req, res) => {
-        const productId = productsService.normalizeId(req.params.id);
-        if (productId) cartService.increaseQuantity(req.session, productId);
+        cartService.increaseQuantity(req.session, req.normalizedId);
         res.redirect('/cart');
     },
 
     decrease: (req, res) => {
-        const productId = productsService.normalizeId(req.params.id);
-        if (productId) cartService.decreaseQuantity(req.session, productId);
+        cartService.decreaseQuantity(req.session, req.normalizedId);
         res.redirect('/cart');
     },
 
     remove: (req, res) => {
-        const productId = productsService.normalizeId(req.params.id);
-        if (productId) cartService.removeProduct(req.session, productId);
+        cartService.removeProduct(req.session, req.normalizedId);
         res.redirect('/cart');
     },
 

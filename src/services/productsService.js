@@ -11,13 +11,24 @@ const mapProduct = (row) => {
 };
 
 const productsService = {
-    // Normalizar ID
-    normalizeId: (idParam) => {
-        const id = Number(idParam);
+    // Middleware: Normalizar ID y validar existencia
+    normalizeId: (req, res, next) => {
+        const id = Number(req.params.id);
+        
         if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
-            return null;
+            return res.status(400).render('400');
         }
-        return id;
+
+        // Validar que el producto exista en la base
+        const stmt = db.prepare('SELECT 1 FROM products WHERE id = ?');
+        const exists = stmt.get(id);
+
+        if (!exists) {
+            return res.status(404).render('404');
+        }
+
+        req.normalizedId = id;
+        next();
     },
 
     // Obtener todos los productos desde SQLite (con opción de ordenamiento en la propia query SQL)
@@ -50,6 +61,15 @@ const productsService = {
         // get() retorna un solo objeto (o undefined si no existe)
         const row = stmt.get(id);
         return mapProduct(row);
+    },
+
+    // Buscar múltiples productos por ID de una vez
+    findByIds: (ids) => {
+        if (!ids || ids.length === 0) return [];
+        const placeholders = ids.map(() => '?').join(',');
+        const stmt = db.prepare(`SELECT * FROM products WHERE id IN (${placeholders})`);
+        const rows = stmt.all(...ids);
+        return rows.map(mapProduct);
     },
 
     // Obtener hasta 4 productos relacionados aleatorios (misma categoría, distinto ID)

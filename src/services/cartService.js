@@ -12,15 +12,42 @@ const cartService = {
     // Obtener los productos del carrito con todos sus detalles para la vista
     getCartDetails: (session) => {
         const cart = cartService.initializeCart(session);
-        return cart.map(item => {
-            const product = productsService.findById(item.productId);
-            if (!product) return null;
-            return {
-                ...product,
-                quantity: item.quantity,
-                subtotal: (product.price || 0) * item.quantity
-            };
-        }).filter(item => item !== null);
+        if (cart.length === 0) return [];
+
+        // 1. Obtener todos los IDs y consultar en 1 solo viaje a la base de datos
+        const productIds = cart.map(item => item.productId);
+        const productsFromDb = productsService.findByIds(productIds);
+        
+        // 2. Crear un diccionario rápido por ID
+        const productMap = {};
+        for (const p of productsFromDb) {
+            productMap[p.id] = p;
+        }
+
+        // 3. Reconstruir el carrito manteniendo el orden de sesión
+        const hydratedCart = [];
+        const validCartItems = []; // Para limpiar ítems obsoletos
+
+        for (const item of cart) {
+            const product = productMap[item.productId];
+            
+            // Si el producto sigue existiendo en DB
+            if (product) {
+                validCartItems.push(item);
+                hydratedCart.push({
+                    ...product,
+                    quantity: item.quantity,
+                    subtotal: (product.price || 0) * item.quantity
+                });
+            }
+        }
+
+        // 4. Limpieza de productos inexistentes: actualizar sesión solo con los válidos
+        if (validCartItems.length !== cart.length) {
+            session.cart = validCartItems;
+        }
+
+        return hydratedCart;
     },
 
     // Calcular el total general del carrito
