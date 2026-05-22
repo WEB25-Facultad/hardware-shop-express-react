@@ -14,7 +14,10 @@
                 <% products.forEach(product => { %>
                     <article class="product-card">
                         <a href="/products/<%= product.id %>" style="text-decoration: none; color: inherit;">
-                            <div class="product-img-box">
+                            <div class="product-img-box" style="position: relative;">
+                                <% if (product.stock === 0) { %>
+                                    <span style="position: absolute; top: 10px; right: 10px; background-color: #ff4d6d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;">Sin stock</span>
+                                <% } %>
                                 <img src="<%= product.image %>" alt="<%= product.name %>">
                             </div>
                             <div class="product-info">

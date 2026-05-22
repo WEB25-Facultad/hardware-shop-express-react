@@ -3,7 +3,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Outfit:wght@400;700;900&display=swap"
+        rel="stylesheet">
 </head>
 <header class="main-header">
     <div class="header-top">
@@ -12,7 +14,7 @@
         </button>
 
         <a href="/" class="logo">HARDWARE<span>STORE</span></a>
-        
+
         <form action="/search" method="GET" class="search-bar">
             <input type="text" name="query" placeholder="Buscar componentes de hardware..." class="input-search">
             <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
@@ -21,22 +23,32 @@
         <div class="user-nav desktop-only">
             <a href="/cart" class="cart-container">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="badge"><%= locals.cartCount !== undefined ? locals.cartCount : 0 %></span>
+                <span class="badge">
+                    <%= locals.cartCount !==undefined ? locals.cartCount : 0 %>
+                </span>
             </a>
             <div class="user-profile">
                 <img src="/img/avatar.png" alt="Avatar" class="avatar">
-                <span>Gamer_JoniOliva</span>
+                <% if (locals.user) { %>
+                    <span>
+                        <%= locals.user.name %>
+                    </span>
+                    <% } else { %>
+                        <span>Usuario</span>
+                        <% } %>
             </div>
         </div>
 
         <div class="mobile-cart-icon mobile-only">
             <a href="/cart" class="cart-container">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="badge"><%= locals.cartCount !== undefined ? locals.cartCount : 0 %></span>
+                <span class="badge">
+                    <%= locals.cartCount !==undefined ? locals.cartCount : 0 %>
+                </span>
             </a>
         </div>
     </div>
-    
+
     <nav class="main-nav desktop-nav">
         <ul>
             <li><a href="/">Inicio</a></li>
@@ -52,7 +64,13 @@
     <div class="drawer-header">
         <div class="user-profile-mobile">
             <img src="https://i.imgur.com/8Km9tLL.png" alt="Avatar" class="avatar-large">
-            <span>Gamer_JoniOliva</span>
+            <% if (locals.user) { %>
+                <span>
+                    <%= locals.user.name %>
+                </span>
+                <% } else { %>
+                    <span>Invitado</span>
+                    <% } %>
         </div>
         <button class="btn-close-drawer" id="closeDrawerBtn"><i class="fas fa-times"></i></button>
     </div>
@@ -77,7 +95,7 @@
         const drawer = document.getElementById('mobileDrawer');
         const overlay = document.getElementById('drawerOverlay');
 
-        if(btnOpen && drawer) {
+        if (btnOpen && drawer) {
             const toggleMenu = () => {
                 drawer.classList.toggle('open');
                 overlay.classList.toggle('open');
