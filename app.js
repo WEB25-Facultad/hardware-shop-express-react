@@ -17,7 +17,7 @@ app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
 // 2. Carpeta de archivos estáticos (CSS, Imágenes)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.use('/controllers', express.static(path.join(__dirname, 'src', 'controllers')));
 
 // 3. Middlewares

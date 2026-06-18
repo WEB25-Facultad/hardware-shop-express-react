@@ -1,0 +1,106 @@
+/* CSS for CategoryView Module */
+
+.category-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.category-view-layout {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .category-view-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.category-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.readonly-input {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: var(--text-muted) !important;
+  border-color: rgba(255, 255, 255, 0.04) !important;
+  cursor: not-allowed;
+  font-family: monospace;
+}
+
+/* Preview / info card */
+.preview-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.folder-illustration {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+  border: var(--border-neon-purple);
+  animation: floatIllustration 4s ease-in-out infinite;
+}
+
+.illustration-icon {
+  color: var(--accent-purple);
+}
+
+.preview-heading {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.preview-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.instruction-box {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.instruction-icon {
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.instruction-box h5 {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.instruction-box p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+@keyframes floatIllustration {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
