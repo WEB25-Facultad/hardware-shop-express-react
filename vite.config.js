@@ -5,11 +5,25 @@ export default defineConfig({
   plugins: [react()],
   esbuild: {
     loader: 'jsx',
-    include: /src\/.*\.js$/,
+    include: /src\/.*\.jsx?$/,
     exclude: [],
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
   },
   server: {
     port: 5173,
-    open: true
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   }
 });

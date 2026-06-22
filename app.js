@@ -3,6 +3,7 @@ const path = require('path');
 const app = express();
 const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
+const cors = require('cors');
 const productsService = require('./src/services/productsService');
 const cartService = require('./src/services/cartService');
 
@@ -23,6 +24,15 @@ app.use('/controllers', express.static(path.join(__dirname, 'src', 'controllers'
 // 3. Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
 app.use(session({
     secret: 'mi-secreto-ecommerce',
     resave: false,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/AppLayout/AppLayout';
 
 // Import Pages
@@ -18,7 +18,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<ProductsList />} />
           <Route path="/products/new" element={<ProductView />} />
           <Route path="/products/:id" element={<ProductView />} />

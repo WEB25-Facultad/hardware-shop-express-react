@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
-import { Store, LayoutDashboard, ShoppingBag, FolderOpen, Users, Bell, Menu, X, ChevronRight } from 'lucide-react';
+import { Store, Home, ShoppingBag, FolderOpen, Users, Bell, Menu, X, ChevronRight } from 'lucide-react';
 import './AppLayout.css';
 
 export default function AppLayout() {
@@ -10,7 +10,7 @@ export default function AppLayout() {
   // Helper to generate dynamic breadcrumbs based on the current pathname
   const renderBreadcrumb = () => {
     const path = location.pathname;
-    const items = [{ label: 'Inicio', link: '/' }];
+    const items = [{ label: 'Inicio', link: '/home' }];
 
     if (path === '/products') {
       items.push({ label: 'Productos', link: '/products' });
@@ -41,7 +41,7 @@ export default function AppLayout() {
       items.push({ label: `Ficha #${id}`, link: path });
     } else if (path === '/profile') {
       items.push({ label: 'Mi Perfil', link: '/profile' });
-    } else if (path !== '/') {
+    } else if (path !== '/home' && path !== '/') {
       items.push({ label: 'Error 404', link: path });
     }
 
@@ -83,13 +83,13 @@ export default function AppLayout() {
 
         <nav className="sidebar-nav">
           <NavLink 
-            to="/" 
+            to="/home" 
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             end
             onClick={() => setIsSidebarOpen(false)}
           >
-            <LayoutDashboard size={20} />
-            <span>General</span>
+            <Home size={20} />
+            <span>Inicio</span>
           </NavLink>
 
           <NavLink 
