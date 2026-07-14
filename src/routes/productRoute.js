@@ -9,4 +9,13 @@ router.get('/', productController.index);
 // Detalle de un producto (ejemplo)
 router.get('/:id', productsService.normalizeId, productController.detail);
 
+// Editar producto
+router.put('/:id/edit', productsService.normalizeId, productController.edit);
+
+// Eliminar producto
+router.delete('/:id/delete', productsService.normalizeId, productController.delete);
+
+// Crear producto
+router.post('/new', productController.create);
+
 module.exports = router;

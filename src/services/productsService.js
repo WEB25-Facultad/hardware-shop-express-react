@@ -10,12 +10,21 @@ const mapProduct = (row) => {
     };
 };
 
+const normalizeString = (str) => {
+    if (!str) return '';
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+};
+
 const productsService = {
     // Middleware: Normalizar ID y validar existencia
     normalizeId: (req, res, next) => {
         const id = Number(req.params.id);
+        const isJson = req.query.format === 'json' || req.headers.accept?.includes('json') || req.method === 'PUT' || req.method === 'DELETE';
         
         if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+            if (isJson) {
+                return res.status(400).json({ error: 'Identificador inválido' });
+            }
             return res.status(400).render('400');
         }
 
@@ -24,6 +33,9 @@ const productsService = {
         const exists = stmt.get(id);
 
         if (!exists) {
+            if (isJson) {
+                return res.status(404).json({ error: 'Producto no encontrado' });
+            }
             return res.status(404).render('404');
         }
 
@@ -100,12 +112,42 @@ const productsService = {
         };
     },
 
-    // Filtrar productos por categoría exacto
+    // Filtrar productos por categoría exacto (insensible a acentos/diacríticos y mayúsculas)
     getProductsByCategory: (categoryName) => {
-        // COLLATE NOCASE asegura que la comparación ignore mayúsculas y minúsculas nativamente en SQLite
-        const stmt = db.prepare('SELECT * FROM products WHERE category COLLATE NOCASE = ?');
-        const rows = stmt.all(categoryName);
-        return rows.map(mapProduct);
+        const stmt = db.prepare('SELECT * FROM products');
+        const rows = stmt.all();
+        const target = normalizeString(categoryName);
+        return rows
+            .filter(p => normalizeString(p.category) === target)
+            .map(mapProduct);
+    },
+
+    // Actualizar producto en SQLite
+    update: (id, data) => {
+        const stmt = db.prepare(`
+            UPDATE products 
+            SET name = ?, price = ?, description = ?, image = ?, category = ?, stock = ?, tienda = ?
+            WHERE id = ?
+        `);
+        stmt.run(data.name, data.price, data.description, data.image, data.category, data.stock, data.tienda, id);
+        return productsService.findById(id);
+    },
+
+    // Eliminar producto de SQLite
+    delete: (id) => {
+        const stmt = db.prepare('DELETE FROM products WHERE id = ?');
+        stmt.run(id);
+        return true;
+    },
+
+    // Crear producto en SQLite
+    create: (data) => {
+        const stmt = db.prepare(`
+            INSERT INTO products (name, price, description, image, category, stock, tienda)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `);
+        const info = stmt.run(data.name, data.price, data.description, data.image, data.category, data.stock, data.tienda);
+        return productsService.findById(info.lastInsertRowid);
     }
 };
 

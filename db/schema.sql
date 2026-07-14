@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS products (
     image TEXT,
     category TEXT,
     mostRequested BOOLEAN DEFAULT 0,
-    stock INTEGER DEFAULT 0
+    stock INTEGER DEFAULT 0,
+    tienda TEXT
 );
 
 -- Tabla de usuarios (vacía por ahora)

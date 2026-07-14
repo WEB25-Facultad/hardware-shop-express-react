@@ -13,7 +13,7 @@ const cartRoutes = require('./src/routes/cartRoute');
 
 // 1. Configuración del Motor de Plantillas (EJS)
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
@@ -60,9 +60,28 @@ app.get('/', (req, res) => {
 });
 
 // Categorías
+app.get('/categories', (req, res) => {
+    const db = require('./db/database');
+    try {
+        const categories = db.prepare('SELECT * FROM categories ORDER BY name ASC').all();
+        res.json(categories);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener categorías' });
+    }
+});
+
 app.get('/categories/:category', (req, res) => {
-    const categoryName = req.params.category;
-    const products = productsService.getProductsByCategory(categoryName);
+    const categoryParam = req.params.category;
+    const db = require('./db/database');
+    
+    // Buscar la categoría con su nombre original acentuado si existe
+    const categories = db.prepare('SELECT name FROM categories').all();
+    const normalizeString = (str) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+    const target = normalizeString(categoryParam);
+    const foundCategory = categories.find(c => normalizeString(c.name) === target);
+    
+    const categoryName = foundCategory ? foundCategory.name : categoryParam;
+    const products = productsService.getProductsByCategory(categoryParam);
     res.render('category', { categoryName, products });
 });
 

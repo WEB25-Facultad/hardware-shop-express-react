@@ -18,6 +18,14 @@ const ProductImage = ({ src, alt }) => {
   );
 };
 
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  return `/api${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+};
+
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,7 +99,7 @@ export default function ProductsList() {
               onClick={() => navigate(`/products/${p.id}`)}
             >
               <ProductImage 
-                src={`/api${p.image}`} 
+                src={getImageUrl(p.image)} 
                 alt={p.name} 
               />
               <div className="product-info">

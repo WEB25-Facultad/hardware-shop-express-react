@@ -4,7 +4,7 @@ const fs = require('fs');
 
 // 1. Inicializar la conexión a la base de datos (se creará el archivo si no existe)
 const dbPath = path.join(__dirname, 'ecommerce.db');
-const db = new Database(dbPath, { verbose: console.log });
+const db = new Database(dbPath);
 
 // 2. Cargar el script de inicialización (schema.sql)
 const schemaPath = path.join(__dirname, 'schema.sql');
