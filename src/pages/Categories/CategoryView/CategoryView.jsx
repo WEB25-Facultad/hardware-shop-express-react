@@ -1,37 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './CategoryView.css';
-import { ArrowLeft, Save, Folder, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, Folder, Check, AlertCircle, Trash2 } from 'lucide-react';
 
 export default function CategoryView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
 
-  const mockCategories = [
-    { id: 1, name: 'Electrónica', slug: 'electronica', description: 'Dispositivos electrónicos, gadgets, teléfonos inteligentes y computadoras de última generación.', status: 'Activo' },
-    { id: 2, name: 'Audio', slug: 'audio', description: 'Equipos de audio premium, auriculares inalámbricos, altavoces y accesorios de sonido.', status: 'Activo' },
-    { id: 3, name: 'Indumentaria', slug: 'indumentaria', description: 'Ropa de moda para hombres y mujeres, accesorios textiles y prendas premium.', status: 'Activo' },
-    { id: 4, name: 'Accesorios', slug: 'accesorios', description: 'Accesorios de computación, teclados mecánicos, ratones y cables de alta calidad.', status: 'Activo' },
-    { id: 5, name: 'Hogar', slug: 'hogar', description: 'Artículos para el hogar, cafeteras, electrodomésticos de cocina y decoración.', status: 'Inactivo' },
-  ];
-
-  const categoryData = mockCategories.find(c => c.id === parseInt(id)) || {
+  const [formData, setFormData] = useState({
     id: 'Nueva',
     name: '',
     slug: '',
     description: '',
     status: 'Activo',
-  };
+  });
 
-  const [formData, setFormData] = useState(categoryData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (id) {
-      const found = mockCategories.find(c => c.id === parseInt(id));
-      if (found) {
-        setFormData(found);
-      }
+    if (id && id !== 'new') {
+      setIsLoading(true);
+      fetch(`http://localhost:3000/api/categories/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Error al cargar la categoría');
+          return res.json();
+        })
+        .then(data => {
+          setFormData({
+            id: data.id,
+            name: data.name || '',
+            slug: data.slug || '',
+            description: data.description || '',
+            status: data.status || 'Activo'
+          });
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setError(err.message);
+          setIsLoading(false);
+        });
     }
   }, [id]);
 
@@ -47,12 +56,79 @@ export default function CategoryView() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-      navigate('/categories');
-    }, 1500);
+
+    if (!formData.name || formData.name.trim() === '') {
+      alert('El nombre es requerido');
+      return;
+    }
+
+    const isNew = !id || id === 'new';
+    const url = isNew ? 'http://localhost:3000/api/categories' : `http://localhost:3000/api/categories/${id}`;
+    const method = isNew ? 'POST' : 'PUT';
+
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => { throw new Error(err.error || 'Error al guardar la categoría') });
+        }
+        return res.json();
+      })
+      .then(() => {
+        setIsSaved(true);
+        setTimeout(() => {
+          setIsSaved(false);
+          navigate('/categories');
+        }, 1500);
+      })
+      .catch(err => {
+        alert(err.message);
+      });
   };
+
+  const handleDelete = () => {
+    if (!id || id === 'new') {
+      navigate('/categories');
+      return;
+    }
+
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
+      fetch(`http://localhost:3000/api/categories/${id}`, {
+        method: 'DELETE'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Error al eliminar la categoría');
+          return res.json();
+        })
+        .then(() => {
+          navigate('/categories');
+        })
+        .catch(err => {
+          alert(err.message);
+        });
+    }
+  };
+
+  if (isLoading) {
+    return <div className="category-view-loading">Cargando categoría...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="category-view-error">
+        <h3>Error</h3>
+        <p>{error}</p>
+        <Link to="/categories" className="back-link">
+          <ArrowLeft size={16} /> Volver a Categorías
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="category-view-container">
@@ -130,6 +206,11 @@ export default function CategoryView() {
           </div>
 
           <div className="form-actions">
+            {id !== 'new' && (
+              <button type="button" onClick={handleDelete} className="cancel-btn" style={{ color: '#ef4444', borderColor: '#ef4444' }}>
+                <Trash2 size={18} /> Eliminar
+              </button>
+            )}
             <button type="button" onClick={() => navigate('/categories')} className="cancel-btn">
               Cancelar
             </button>
