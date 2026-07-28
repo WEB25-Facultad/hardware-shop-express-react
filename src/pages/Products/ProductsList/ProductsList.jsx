@@ -23,7 +23,7 @@ const getImageUrl = (imagePath) => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
-  return `/api${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+  return `http://localhost:3000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
 };
 
 export default function ProductsList() {
@@ -34,7 +34,7 @@ export default function ProductsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/products?format=json', {
+    fetch('http://localhost:3000/api/products', {
       headers: {
         'Accept': 'application/json'
       }

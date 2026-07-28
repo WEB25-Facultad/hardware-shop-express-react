@@ -19,7 +19,7 @@ const productsService = {
     // Middleware: Normalizar ID y validar existencia
     normalizeId: (req, res, next) => {
         const id = Number(req.params.id);
-        const isJson = req.query.format === 'json' || req.headers.accept?.includes('json') || req.method === 'PUT' || req.method === 'DELETE';
+        const isJson = req.originalUrl.startsWith('/api') || req.query.format === 'json' || req.headers.accept?.includes('json') || req.method === 'PUT' || req.method === 'DELETE';
         
         if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
             if (isJson) {

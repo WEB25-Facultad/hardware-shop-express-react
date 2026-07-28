@@ -8,7 +8,7 @@ const getImageUrl = (imagePath) => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
-  return `/api${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+  return `http://localhost:3000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
 };
 
 export default function ProductView() {
@@ -35,7 +35,7 @@ export default function ProductView() {
 
   // Fetch categories from API
   useEffect(() => {
-    fetch('/api/categories')
+    fetch('http://localhost:3000/api/categories')
       .then(res => {
         if (!res.ok) throw new Error('Error al cargar las categorías');
         return res.json();
@@ -52,7 +52,7 @@ export default function ProductView() {
   useEffect(() => {
     if (!isNew) {
       setIsLoading(true);
-      fetch(`/api/products/${id}?format=json`)
+      fetch(`http://localhost:3000/api/products/${id}`)
         .then(res => {
           if (!res.ok) throw new Error('Error al cargar el producto');
           return res.json();
@@ -145,7 +145,7 @@ export default function ProductView() {
       return;
     }
 
-    const url = isNew ? '/api/products/new' : `/api/products/${id}/edit`;
+    const url = isNew ? 'http://localhost:3000/api/products' : `http://localhost:3000/api/products/${id}`;
     const method = isNew ? 'POST' : 'PUT';
 
     fetch(url, {
@@ -188,7 +188,7 @@ export default function ProductView() {
     }
 
     if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-      fetch(`/api/products/${id}/delete`, {
+      fetch(`http://localhost:3000/api/products/${id}`, {
         method: 'DELETE'
       })
         .then(res => {
