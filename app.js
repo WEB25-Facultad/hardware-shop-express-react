@@ -10,6 +10,9 @@ const cartService = require('./src/services/cartService');
 // Rutas
 const productRoutes = require('./src/routes/productRoute');
 const cartRoutes = require('./src/routes/cartRoute');
+const productsApiRoutes = require('./src/routes/api/productsApiRoute');
+const categoriesApiRoutes = require('./src/routes/api/categoriesApiRoute');
+const statsApiRoutes = require('./src/routes/api/statsApiRoute');
 
 // 1. Configuración del Motor de Plantillas (EJS)
 app.set('view engine', 'ejs');
@@ -24,15 +27,7 @@ app.use('/controllers', express.static(path.join(__dirname, 'src', 'controllers'
 // 3. Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    next();
-});
+app.use(cors());
 app.use(session({
     secret: 'mi-secreto-ecommerce',
     resave: false,
@@ -52,6 +47,9 @@ app.use((req, res, next) => {
 // 4. RUTAS DEFINIDAS
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
+app.use('/api/products', productsApiRoutes);
+app.use('/api/categories', categoriesApiRoutes);
+app.use('/api/stats', statsApiRoutes);
 
 // Inicio
 app.get('/', (req, res) => {
@@ -60,16 +58,6 @@ app.get('/', (req, res) => {
 });
 
 // Categorías
-app.get('/categories', (req, res) => {
-    const db = require('./db/database');
-    try {
-        const categories = db.prepare('SELECT * FROM categories ORDER BY name ASC').all();
-        res.json(categories);
-    } catch (err) {
-        res.status(500).json({ error: 'Error al obtener categorías' });
-    }
-});
-
 app.get('/categories/:category', (req, res) => {
     const categoryParam = req.params.category;
     const db = require('./db/database');
