@@ -4,7 +4,7 @@ import './Home.css';
 import { ShoppingBag, FolderOpen } from 'lucide-react';
 
 export default function Home() {
-  const username = "Olivia"; // Por ahora estático, preparado para cuando haya sesiones
+  const username = "Admin"; // Por ahora estático, preparado para cuando haya sesiones
   
   const [stats, setStats] = useState({
     products: 0,

@@ -1,0 +1,26 @@
+<!-- 
+  Componente Parcial: Tarjeta de Producto (ProductCard)
+  Este archivo define la estructura visual reutilizable para mostrar un producto en catálogos.
+  Recibe un objeto 'product' que contiene la información del producto a renderizar.
+-->
+<a href="/products/<%= product.id %>" class="product-card" style="text-decoration: none;">
+    <!-- Contenedor de la imagen del producto -->
+    <div class="product-img-box" style="position: relative;">
+        <!-- Si el stock es 0, mostramos un badge indicador visual de 'Sin stock' -->
+        <% if (product.stock === 0) { %>
+            <span style="position: absolute; top: 10px; right: 10px; background-color: #ff4d6d; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; z-index: 2;">Sin stock</span>
+        <% } %>
+        <!-- Renderizado de la imagen. Si no hay imagen, usamos una de fallback local -->
+        <img src="<%= product.image || '/img/no-image.jpg' %>" alt="<%= product.name %>">
+    </div>
+
+    <!-- Contenedor con la información del producto -->
+    <div class="product-info">
+        <!-- El precio del producto ahora está expresado en Puntos (PTS) según lo requerido -->
+        <p class="price"><%= product.price.toLocaleString() %> PTS</p>
+        <!-- Nombre del producto -->
+        <h4 class="name"><%= product.name %></h4>
+        <!-- Botón para ver los detalles del producto -->
+        <button class="boton-comprar">Ver Detalle</button>
+    </div>
+</a>

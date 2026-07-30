@@ -1,0 +1,103 @@
+<main class="cart-main">
+    <div class="cart-container-page">
+        <!-- Enlace para volver a la tienda desde el carrito -->
+        <div class="cart-header-actions">
+            <a href="/" class="btn-back">← Volver al listado</a>
+        </div>
+
+        <h2 class="cart-title">Tu Carrito de Compras</h2>
+
+        <!-- Si hay productos en el carrito, mostramos el listado -->
+        <% if (cartProducts && cartProducts.length > 0) { %>
+            <div class="cart-grid">
+                <!-- Columna de items del carrito -->
+                <div class="cart-items-column">
+                    <div class="cart-items">
+                        <% cartProducts.forEach(item => { %>
+                            <article class="cart-item">
+                                <div class="item-main-info">
+                                    <img src="<%= item.image %>" alt="<%= item.name %>">
+                                    <div class="cart-item-name">
+                                        <h4><%= item.name %></h4>
+                                        <p style="font-size: 0.8rem; color: #888;">Cod: #00<%= item.id %></p>
+                                    </div>
+                                </div>
+
+                                <div class="cart-item-actions">
+                                    <!-- Controles de cantidad: botón menos y botón más -->
+                                    <div class="quantity-control">
+                                        <!-- Formulario POST para decrementar cantidad -->
+                                        <form action="/cart/decrease/<%= item.id %>" method="POST">
+                                            <button type="submit" class="btn-qty btn-minus"><i class="fas fa-minus"></i></button>
+                                        </form>
+                                        
+                                        <span class="quantity"><%= item.quantity %></span>
+                                        
+                                        <!-- Formulario POST para incrementar cantidad -->
+                                        <form action="/cart/increase/<%= item.id %>" method="POST">
+                                            <button type="submit" class="btn-qty btn-plus"><i class="fas fa-plus"></i></button>
+                                        </form>
+                                    </div>
+                                    
+                                    <!-- Subtotal del producto expresado en PTS (Puntos) -->
+                                    <div class="cart-item-price">
+                                        <span class="points"><%= item.subtotal.toLocaleString() %> PTS</span>
+                                    </div>
+                                    
+                                    <!-- Botón para remover completamente el producto -->
+                                    <form action="/cart/remove/<%= item.id %>" method="POST">
+                                        <button type="submit" class="btn-remove" title="Quitar producto"><i class="fas fa-trash-alt"></i></button>
+                                    </form>
+                                </div>
+                            </article>
+                        <% }) %>
+                    </div>
+                    
+                    <!-- Botón para vaciar todo el carrito a la vez -->
+                    <div class="cart-footer-actions">
+                        <form action="/cart/clear" method="POST">
+                            <button type="submit" class="btn-vaciar">Vaciar Carrito</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Barra lateral del resumen de compra (aside) -->
+                <aside class="cart-summary-premium">
+                    <h3 class="summary-title">Resumen de Compra</h3>
+                    <div class="summary-row">
+                        <span>Productos (<%= cartCount %>)</span>
+                        <span><%= total.toLocaleString() %> PTS</span>
+                    </div>
+
+                    <!-- NUEVO BONUS: Campo de Cupón de Descuento Alfanumérico -->
+                    <div class="coupon-section" style="margin: 20px 0; padding-top: 15px; border-top: 1px solid #333;">
+                        <label for="coupon-code" style="display: block; font-size: 0.85rem; color: #888; margin-bottom: 8px;">¿Tenés un cupón de descuento?</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="coupon-code" placeholder="CUPON10" style="flex: 1; background: #111; border: 1px solid #333; color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem;">
+                            <button type="button" class="btn-qty" style="padding: 0 15px; font-size: 0.85rem; border-color: #00c8ff; color: #00c8ff; background: transparent; cursor: pointer; border-radius: 6px; font-weight: bold;">Aplicar</button>
+                        </div>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Envío</span>
+                        <span style="color: #00e676;">Gratis</span>
+                    </div>
+                    <div class="summary-row total" style="border-top: 1px solid #333; padding-top: 15px;">
+                        <span>Total</span>
+                        <span><%= total.toLocaleString() %> PTS</span>
+                    </div>
+
+                    <!-- Enlace para proceder al checkout de pago -->
+                    <a href="/checkout" class="btn-checkout" style="width: 100%; text-align: center; margin-top: 20px; display: block; text-decoration: none;">Continuar Compra</a>
+                </aside>
+            </div>
+        <% } else { %>
+            <!-- Mensaje amigable de carrito vacío -->
+            <div class="empty-cart-message">
+                <i class="fas fa-shopping-basket" style="font-size: 4rem; color: #333; margin-bottom: 20px;"></i>
+                <p>Parece que aún no has agregado nada.</p>
+                <a href="/" class="btn-checkout" style="font-size: 1rem; padding: 10px 30px; text-decoration: none; display: inline-block;">Explorar Productos</a>
+            </div>
+        <% } %>
+    </div>
+</main>

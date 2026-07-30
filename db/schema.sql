@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS users (
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    role TEXT DEFAULT 'Cliente',
+    status TEXT DEFAULT 'Activo',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

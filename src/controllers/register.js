@@ -76,47 +76,15 @@
     return true;
   }
 
-  function validarPassword(passwordInput, email, nombre) {
+  function validarPassword(passwordInput) {
     const val = passwordInput.value;
-    const valLower = val.toLowerCase();
     
     if (val === '') {
       setFieldState(passwordInput, 'La contraseña es obligatoria.');
       return false;
     }
-    if (val !== val.trim()) {
-      setFieldState(passwordInput, 'La contraseña no debe tener espacios al inicio o al final.');
-      return false;
-    }
     if (val.length < 8) {
       setFieldState(passwordInput, 'Mínimo 8 caracteres.');
-      return false;
-    }
-    if (!/[a-zA-Z]/.test(val)) {
-      setFieldState(passwordInput, 'Debe incluir al menos una letra.');
-      return false;
-    }
-    if (!/[0-9]/.test(val)) {
-      setFieldState(passwordInput, 'Debe incluir al menos un número.');
-      return false;
-    }
-    if (!SPECIAL_CHARS_REGEX.test(val)) {
-      setFieldState(passwordInput, 'Debe incluir al menos un carácter especial.');
-      return false;
-    }
-    
-    const nombreLower = nombre.trim().toLowerCase();
-    const forbidden = [...FORBIDDEN_STRINGS];
-    if (nombreLower) forbidden.push(nombreLower);
-    
-    for (const s of forbidden) {
-      if (valLower.includes(s)) {
-        setFieldState(passwordInput, `No puede contener "${s}".`);
-        return false;
-      }
-    }
-    if (valLower === email.trim().toLowerCase()) {
-      setFieldState(passwordInput, 'No puede ser igual al email.');
       return false;
     }
     setFieldState(passwordInput, null);
@@ -177,7 +145,7 @@
         validarNombre(fields.nombre),
         validarApellido(fields.apellido),
         validarEmail(fields.email),
-        validarPassword(fields.password, fields.email.value, fields.nombre.value),
+        validarPassword(fields.password),
         validarPasswordRepeat(fields.repeat, fields.password.value)
       ];
 

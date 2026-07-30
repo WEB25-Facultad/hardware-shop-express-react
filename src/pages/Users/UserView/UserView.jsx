@@ -1,68 +1,158 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './UserView.css';
-import { ArrowLeft, Save, Mail, Calendar, Key, Check } from 'lucide-react';
+import { ArrowLeft, Save, Mail, Calendar, Key, Check, ShieldAlert } from 'lucide-react';
 
 export default function UserView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const isNew = !id || id === 'new';
 
-  const mockUsers = [
-    { id: 1, name: 'Alvaro Silvera', email: 'alvaro@ecommerce.com', role: 'Administrador', status: 'Activo', initials: 'AS', joined: '12/01/2026' },
-    { id: 2, name: 'Jona Oliva', email: 'jona@ecommerce.com', role: 'Editor', status: 'Activo', initials: 'JO', joined: '15/01/2026' },
-    { id: 3, name: 'Luka Mercado', email: 'luka@ecommerce.com', role: 'Administrador', status: 'Activo', initials: 'LM', joined: '10/02/2026' },
-    { id: 4, name: 'Sofía Rossi', email: 'sofia.rossi@gmail.com', role: 'Cliente', status: 'Inactivo', initials: 'SR', joined: '04/03/2026' },
-    { id: 5, name: 'Martin Fierro', email: 'martin.fierro@outlook.com', role: 'Cliente', status: 'Activo', initials: 'MF', joined: '22/03/2026' },
-  ];
-
-  const userData = mockUsers.find(u => u.id === parseInt(id)) || {
-    id: 'Nuevo',
+  // Estado del formulario de usuario
+  const [formData, setFormData] = useState({
+    id: isNew ? 'Nuevo' : id,
     name: '',
     email: '',
     role: 'Cliente',
     status: 'Activo',
     initials: '?',
     joined: 'Hoy',
-  };
+    password: '',
+  });
 
-  const [formData, setFormData] = useState(userData);
-
+  // Cargamos los datos si se trata de una edición de usuario existente
   useEffect(() => {
-    if (id) {
-      const found = mockUsers.find(u => u.id === parseInt(id));
-      if (found) {
-        setFormData(found);
-      }
+    if (id && id !== 'new') {
+      setIsLoading(true);
+      fetch(`http://localhost:3000/api/users/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Error al obtener el usuario');
+          return res.json();
+        })
+        .then(data => {
+          setFormData({
+            ...data,
+            password: '' // No se carga la contraseña por razones de seguridad
+          });
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error('Error fetching user detail:', err);
+          setIsLoading(false);
+        });
+    } else {
+      // Valores por defecto para la creación de un nuevo usuario
+      setFormData({
+        id: 'Nuevo',
+        name: '',
+        email: '',
+        role: 'Cliente',
+        status: 'Activo',
+        initials: 'NU',
+        joined: 'Hoy',
+        password: '',
+      });
+      setIsLoading(false);
     }
-  }, [id]);
+  }, [id, isNew]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      
+      // Auto-generamos las iniciales para el avatar en base al nombre
+      if (name === 'name' && isNew) {
+        updated.initials = value
+          ? value.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+          : 'NU';
+      }
+      return updated;
+    });
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-      navigate('/users');
-    }, 1500);
+    
+    // Validaciones estrictas si se está registrando un nuevo usuario
+    if (isNew) {
+      if (!formData.name.trim() || !formData.email.trim() || !formData.password) {
+        alert('Por favor, completa los campos obligatorios: Nombre, Email y Contraseña');
+        return;
+      }
+      if (formData.password.length < 8) {
+        alert('La contraseña debe tener al menos 8 caracteres para ser segura');
+        return;
+      }
+    }
+
+    const url = isNew ? 'http://localhost:3000/api/users' : `http://localhost:3000/api/users/${id}`;
+    const method = isNew ? 'POST' : 'PUT';
+    
+    // Si es creación enviamos los datos completos del registro; si es edición, solo el rol y estado
+    const bodyData = isNew 
+      ? {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          role: formData.role,
+          status: formData.status
+        }
+      : {
+          role: formData.role,
+          status: formData.status
+        };
+
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bodyData)
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => { throw new Error(err.error || 'Error al guardar los cambios') });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          setIsSaved(true);
+          setTimeout(() => {
+            setIsSaved(false);
+            navigate('/users');
+          }, 1500);
+        } else {
+          alert(data.error || 'Error al guardar los cambios');
+        }
+      })
+      .catch(err => {
+        console.error('Error saving user:', err);
+        alert(err.message);
+      });
   };
 
+  // Simulación de actividad del usuario
   const recentActivity = [
-    { action: 'Inicio de sesión', ip: '192.168.1.45', date: 'Hoy, 10:14' },
-    { action: 'Cambio de contraseña', ip: '192.168.1.45', date: 'Ayer, 18:30' },
-    { action: 'Compra registrada (#1024)', ip: '186.22.105.4', date: '12/06/2026' },
+    { action: 'Registro de cuenta', ip: '127.0.0.1 (Servidor)', date: 'Hoy, Reciente' }
   ];
+
+  if (isLoading && !isNew) {
+    return (
+      <div className="user-view-container">
+        <div className="component-placeholder-tag">Component: UserView</div>
+        <div className="loading-state" style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '40px' }}>
+          Cargando datos del usuario...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="user-view-container">
-      {/* Component Name Placeholder (Styled) */}
       <div className="component-placeholder-tag">Component: UserView</div>
 
       <header className="page-header animate-fade-in">
@@ -71,20 +161,22 @@ export default function UserView() {
             <ArrowLeft size={16} /> Volver a Usuarios
           </Link>
           <div className="title-section">
-            <h1 className="text-gradient-cyan">Ficha de Usuario</h1>
-            <p className="subtitle">Configurá los permisos, roles e información de contacto del perfil.</p>
+            <h1 className="text-gradient-cyan">
+              {isNew ? 'Registrar Usuario' : 'Ficha de Usuario'}
+            </h1>
+            <p className="subtitle">Configurá las credenciales, roles y permisos de acceso al Dashboard.</p>
           </div>
         </div>
       </header>
 
       <div className="user-view-layout">
-        {/* Profile Card & Bio */}
+        {/* Tarjeta de perfil y resumen del usuario */}
         <div className="glass-panel profile-card animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <div className="profile-header-info">
             <div className="profile-avatar-large">
-              {formData.initials}
+              {formData.initials || 'NU'}
             </div>
-            <h2>{formData.name}</h2>
+            <h2>{formData.name || 'Nuevo Usuario'}</h2>
             <span className={`role-tag ${
               formData.role === 'Administrador' ? 'admin' :
               formData.role === 'Editor' ? 'editor' : 'client'
@@ -98,7 +190,7 @@ export default function UserView() {
               <Mail size={16} className="detail-icon" />
               <div>
                 <span className="detail-label">Correo Electrónico</span>
-                <span className="detail-val">{formData.email}</span>
+                <span className="detail-val">{formData.email || 'correo@ejemplo.com'}</span>
               </div>
             </div>
 
@@ -120,12 +212,53 @@ export default function UserView() {
           </div>
         </div>
 
-        {/* Edit Form & Activity */}
+        {/* Sección de Formulario y Actividad */}
         <div className="form-activity-wrapper">
-          {/* Edit Form */}
           <form onSubmit={handleSave} className="glass-panel user-form animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <h3 className="section-title">Permisos y Rol</h3>
+            <h3 className="section-title">Datos Personales y Rol</h3>
             
+            {/* NUEVO: Campos para registrar un nuevo usuario desde el Dashboard */}
+            {isNew && (
+              <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="form-group" style={{ marginBottom: '15px' }}>
+                  <label htmlFor="name">Nombre Completo</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    placeholder="Ej. Juan Pérez"
+                    required 
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '15px' }}>
+                  <label htmlFor="email">Correo Electrónico</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    placeholder="correo@ejemplo.com"
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Contraseña de Acceso</label>
+                  <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                    placeholder="Min. 8 caracteres"
+                    required 
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="form-row-2">
               <div className="form-group">
                 <label htmlFor="role">Rol del Sistema</label>
@@ -173,21 +306,23 @@ export default function UserView() {
             </div>
           </form>
 
-          {/* Activity Log */}
-          <div className="glass-panel activity-card animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <h3 className="section-title">Registro de Actividad</h3>
-            <div className="activity-list">
-              {recentActivity.map((act, idx) => (
-                <div key={idx} className="activity-item">
-                  <div className="activity-bullet"></div>
-                  <div className="activity-desc">
-                    <span className="activity-action">{act.action}</span>
-                    <span className="activity-meta">IP: {act.ip} • {act.date}</span>
+          {/* Historial de actividad (Solo para usuarios existentes) */}
+          {!isNew && (
+            <div className="glass-panel activity-card animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <h3 className="section-title">Registro de Actividad</h3>
+              <div className="activity-list">
+                {recentActivity.map((act, idx) => (
+                  <div key={idx} className="activity-item">
+                    <div className="activity-bullet"></div>
+                    <div className="activity-desc">
+                      <span className="activity-action">{act.action}</span>
+                      <span className="activity-meta">IP: {act.ip} • {act.date}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

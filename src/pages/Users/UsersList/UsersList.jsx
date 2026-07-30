@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './UsersList.css';
 import { Search, Eye, Edit3, Trash2, ShieldCheck, UserCheck, UserX } from 'lucide-react';
 
 export default function UsersList() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const mockUsers = [
-    { id: 1, name: 'Alvaro Silvera', email: 'alvaro@ecommerce.com', role: 'Administrador', status: 'Activo', initials: 'AS' },
-    { id: 2, name: 'Jona Oliva', email: 'jona@ecommerce.com', role: 'Editor', status: 'Activo', initials: 'JO' },
-    { id: 3, name: 'Luka Mercado', email: 'luka@ecommerce.com', role: 'Administrador', status: 'Activo', initials: 'LM' },
-    { id: 4, name: 'Sofía Rossi', email: 'sofia.rossi@gmail.com', role: 'Cliente', status: 'Inactivo', initials: 'SR' },
-    { id: 5, name: 'Martin Fierro', email: 'martin.fierro@outlook.com', role: 'Cliente', status: 'Activo', initials: 'MF' },
-  ];
+  useEffect(() => {
+    fetch('http://localhost:3000/api/users')
+      .then(res => {
+        if (!res.ok) throw new Error('Error al obtener usuarios');
+        return res.json();
+      })
+      .then(data => {
+        setUsers(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching users:', err);
+        setIsLoading(false);
+      });
+  }, []);
 
-  const filteredUsers = mockUsers.filter(u =>
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.role.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleDelete = (id, name) => {
+    if (window.confirm(`¿Estás seguro de que querés eliminar al usuario ${name}?`)) {
+      fetch(`http://localhost:3000/api/users/${id}`, {
+        method: 'DELETE'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Error al eliminar usuario');
+          return res.json();
+        })
+        .then(data => {
+          if (data.success) {
+            setUsers(prev => prev.filter(u => u.id !== id));
+          } else {
+            alert(data.error || 'Error al eliminar usuario');
+          }
+        })
+        .catch(err => {
+          console.error('Error deleting user:', err);
+          alert('Ocurrió un error al intentar eliminar el usuario');
+        });
+    }
+  };
+
+  const filteredUsers = users.filter(u =>
+    (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (u.role && u.role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -30,6 +63,10 @@ export default function UsersList() {
           <h1 className="text-gradient-cyan">Control de Usuarios</h1>
           <p className="subtitle">Administrá las cuentas de tus clientes y los permisos del personal administrativo.</p>
         </div>
+        {/* NUEVO: Botón para navegar a la pantalla de registro de nuevo usuario */}
+        <Link to="/users/new" className="glow-btn add-user-btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <UserCheck size={18} /> Registrar Usuario
+        </Link>
       </header>
 
       {/* Search Bar */}
@@ -96,7 +133,7 @@ export default function UsersList() {
                       <Link to={`/users/${u.id}`} className="action-btn edit" title="Editar Permisos">
                         <Edit3 size={16} />
                       </Link>
-                      <button className="action-btn delete" title="Suspender Cuenta">
+                      <button onClick={() => handleDelete(u.id, u.name)} className="action-btn delete" title="Eliminar Usuario">
                         <Trash2 size={16} />
                       </button>
                     </td>
@@ -105,7 +142,7 @@ export default function UsersList() {
               ) : (
                 <tr>
                   <td colSpan="6" className="empty-table-cell">
-                    No se encontraron usuarios que coincidan con la búsqueda.
+                    {isLoading ? 'Cargando usuarios...' : 'No se encontraron usuarios que coincidan con la búsqueda.'}
                   </td>
                 </tr>
               )}
@@ -113,7 +150,7 @@ export default function UsersList() {
           </table>
         </div>
         <div className="table-footer">
-          <span className="pagination-info">Mostrando {filteredUsers.length} de {mockUsers.length} usuarios</span>
+          <span className="pagination-info">Mostrando {filteredUsers.length} de {users.length} usuarios</span>
           <div className="pagination-controls">
             <button className="pagination-btn" disabled>Anterior</button>
             <button className="pagination-btn active">1</button>

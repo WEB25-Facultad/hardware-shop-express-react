@@ -25,7 +25,7 @@ const productsService = {
             if (isJson) {
                 return res.status(400).json({ error: 'Identificador inválido' });
             }
-            return res.status(400).render('400');
+            return res.status(400).render('pages/400');
         }
 
         // Validar que el producto exista en la base
@@ -36,7 +36,11 @@ const productsService = {
             if (isJson) {
                 return res.status(404).json({ error: 'Producto no encontrado' });
             }
-            return res.status(404).render('404');
+            
+            // Si el producto no existe, obtenemos 4 productos recomendados aleatorios
+            // para mostrarlos en el carrusel de recomendación en la página 404
+            const recommended = productsService.findAll().sort(() => 0.5 - Math.random()).slice(0, 4);
+            return res.status(404).render('pages/404', { recommended });
         }
 
         req.normalizedId = id;

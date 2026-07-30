@@ -1,11 +1,14 @@
 const productsService = require('../services/productsService');
+// Importamos el servicio de categorías para cargar el listado en la vista de detalle
+const categoryService = require('../services/categoryService');
 
 const productController = {
     index: (req, res) => {
         const sortQuery = req.query.sort; 
         const products = productsService.findAll(sortQuery);
         
-        res.render('products', { products });
+        // Renderiza la lista de catálogo desde views/pages/
+        res.render('pages/products', { products });
     },
     detail: (req, res) => {
         // La validación 400 y 404 ya la hizo el middleware normalizeId
@@ -13,9 +16,14 @@ const productController = {
         
         const related = productsService.getRelatedProducts(product);
         
-        res.render('productDetail', { 
+        // Obtenemos todas las categorías registradas en SQLite para mostrarlas en el panel inferior
+        const categories = categoryService.findAll();
+        
+        // Renderiza la ficha de detalle de producto desde views/pages/product.ejs
+        res.render('pages/product', { 
             product: product, 
-            related: related 
+            related: related,
+            categories: categories
         });
     },
     edit: (req, res) => {

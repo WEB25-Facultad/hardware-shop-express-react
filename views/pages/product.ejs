@@ -1,0 +1,115 @@
+<main class="product-detail-main">
+    <!-- Migas de pan (breadcrumbs) para navegación -->
+    <div class="breadcrumb">
+        <a href="/">Inicio</a> > <a href="/products">Productos</a> > <%= product.name %>
+    </div>
+
+    <!-- Ficha de detalles del producto principal -->
+    <section class="detail-card">
+        <!-- Galería de imágenes del producto (miniatura y vista principal) -->
+        <div class="gallery-column">
+            <div class="thumbnails">
+                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 1" class="thumb-image active">
+                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 2" class="thumb-image">
+                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="Thumb 3" class="thumb-image">
+            </div>
+            <div class="main-image-container" style="position: relative;">
+                <!-- Badge si el producto actual no tiene stock disponible -->
+                <% if (product.stock === 0) { %>
+                    <span style="position: absolute; top: 15px; right: 15px; background-color: #ff4d6d; color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 1rem; z-index: 2; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);">Sin stock</span>
+                <% } %>
+                <img src="<%= product.image || '/img/no-image.jpg' %>" alt="<%= product.name %>">
+            </div>
+        </div>
+
+        <!-- Columna de información textual del producto -->
+        <div class="info-column">
+            <!-- Categoría del producto en mayúsculas -->
+            <p style="color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;"><%= product.category %></p>
+            <h2 style="margin-top: 0;"><%= product.name %></h2>
+            
+            <!-- Precio del producto expresado en PTS (Puntos) -->
+            <div class="product-price">
+                <%= product.price.toLocaleString() %> PTS
+            </div>
+            
+            <!-- Formulario POST para agregar el producto al carrito en la sesión -->
+            <form action="/cart/add/<%= product.id %>" method="POST">
+                <button type="submit" class="btn-add-cart" <%= product.stock === 0 ? 'disabled style="background-color: #333; cursor: not-allowed; color: #888; box-shadow: none; transform: none;"' : '' %>>
+                    <%= product.stock === 0 ? 'Sin stock' : 'Agregar al Carrito' %>
+                </button>
+            </form>
+            
+            <div class="product-description">
+                <p><%= product.description %></p>
+                <p>Ideal para tareas pesadas, creación de contenido y los juegos más exigentes del mercado.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVO BONUS: Listado de categorías al final de la página para incentivar la compra múltiple -->
+    <% if (locals.categories && categories.length > 0) { %>
+        <section class="categories-section" style="margin-top: 40px; border-top: 1px solid #333; padding-top: 30px;">
+            <h3 style="text-align: center; color: #00c8ff; margin-bottom: 25px;">Explorar Otras Categorías</h3>
+            <div class="categories-grid">
+                <% categories.forEach(cat => { %>
+                    <a href="/categories/<%= cat.name %>" class="category-item" style="text-decoration: none; color: inherit;">
+                        <i class="fas fa-folder-open"></i>
+                        <span><%= cat.name %></span>
+                    </a>
+                <% }) %>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- SECCIÓN: PRODUCTOS RELACIONADOS -->
+    <h3 class="related-title" style="margin-top: 40px; color: #00c8ff;">Productos relacionados</h3>
+    <% if (locals.related && related.length > 0) { %>
+        <section class="productos-container" style="margin-bottom: 50px;">
+            <!-- 
+              Bucle para iterar y renderizar los productos relacionados (que comparten la misma categoría).
+              Utilizamos el partial 'productCard' para consistencia del precio en PTS y diseño.
+            -->
+            <% related.forEach(relatedProduct => { %>
+                <%- include('../partials/productCard', { product: relatedProduct }) %>
+            <% }) %>
+        </section>
+    <% } else { %>
+        <!-- Mensaje si no hay otros productos en esta categoría -->
+        <div style="text-align: center; margin-bottom: 50px; padding: 20px; background-color: var(--card-bg); border-radius: 10px; color: var(--text-muted);">
+            <p>No hay productos relacionados disponibles en este momento.</p>
+        </div>
+    <% } %>
+</main>
+
+<!-- MODAL DE CONFIRMACIÓN (Se abre vía URL query parameter '?added=true') -->
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-check-circle" style="color: #00e676; font-size: 3rem; margin-bottom: 15px;"></i>
+            <h3>¡Producto Agregado!</h3>
+            <p>El producto <strong><%= product.name %></strong> se añadió a tu carrito.</p>
+        </div>
+        <div class="modal-actions">
+            <button onclick="closeModal()" class="btn-secondary">Seguir Comprando</button>
+            <a href="/cart" class="btn-primary" style="text-decoration: none; text-align: center; line-height: 40px;">Ver Carrito</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función de frontend para cerrar el modal y limpiar la URL
+    function closeModal() {
+        document.getElementById('addModal').style.display = 'none';
+        const url = new URL(window.location);
+        url.searchParams.delete('added');
+        window.history.replaceState({}, '', url);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('added') === 'true') {
+            document.getElementById('addModal').style.display = 'flex';
+        }
+    });
+</script>

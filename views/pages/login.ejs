@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Iniciar Sesión</title>
+        <link rel="stylesheet" href="/css/styles.css">
+        <!-- Iconos de FontAwesome para el diseño -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Contenedor principal para centrar la tarjeta de login -->
+        <main class="register-main">
+            <div class="register-wrapper">
+                <!-- Tarjeta que contiene el formulario de inicio de sesión -->
+                <section class="register-card">
+                    <h2>¡Hola!</h2>
+                    
+                    <!-- Mensaje de error dinámico en el servidor si falla la autenticación -->
+                    <div id="form-global-error" class="global-error-msg <%= locals.error ? 'visible' : '' %>">
+                        <%= locals.error || '' %>
+                    </div>
+
+                    <!-- Formulario de inicio de sesión que envía datos via POST a /login -->
+                    <form action="/login" method="POST" class="register-form">
+                        <div class="control-formulario">
+                            <!-- Input para ingresar el usuario o correo del cliente -->
+                            <input type="text" name="user" placeholder="Tu nombre de usuario o email" required>
+                        </div>
+                        <div class="control-formulario">
+                            <!-- Input de tipo contraseña para ocultar caracteres -->
+                            <input type="password" name="password" placeholder="Tu contraseña" required>
+                        </div>
+                        <button type="submit" class="btn-register">Iniciar Sesión</button>
+                    </form>
+                </section>
+
+                <!-- Pie de página fuera de la tarjeta con enlaces de navegación -->
+                <div class="register-footer-outside">
+                    <!-- Enlace hacia la página de registro si no tiene credenciales -->
+                    <p>¿No tienes cuenta? <a href="/register">Registrar</a></p>
+                    
+                    <!-- NUEVO: Enlace para volver a la página de inicio directamente desde el login -->
+                    <p style="margin-top: 15px;">
+                        <a href="/" style="color: #00c8ff; font-size: 0.9rem; text-decoration: none; font-weight: 600;">
+                            <i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Volver al Inicio
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

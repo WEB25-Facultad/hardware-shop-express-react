@@ -11,8 +11,15 @@ const schemaPath = path.join(__dirname, 'schema.sql');
 const schema = fs.readFileSync(schemaPath, 'utf-8');
 
 // 3. Ejecutar los comandos para crear las tablas si no existen
-// db.exec() es ideal para ejecutar múltiples sentencias SQL (como un schema entero)
 db.exec(schema);
+
+// Migraciones de esquema
+try {
+    db.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'Cliente'");
+} catch (e) {}
+try {
+    db.exec("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'Activo'");
+} catch (e) {}
 
 console.log('Base de datos SQLite inicializada correctamente.');
 

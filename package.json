@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "nodemon app.js",
+    "server": "nodemon --ignore db/ app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

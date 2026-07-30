@@ -6,7 +6,8 @@ const cartController = {
         const cartProducts = cartService.getCartDetails(req.session);
         const total = cartService.calculateTotal(req.session);
 
-        res.render('cart', { 
+        // Renderiza el carrito desde la carpeta views/pages/
+        res.render('pages/cart', { 
             cartProducts, 
             total 
         });
