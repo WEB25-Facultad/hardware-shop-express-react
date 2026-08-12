@@ -16,6 +16,8 @@ const statsApiRoutes = require('./src/routes/api/statsApiRoute');
 const usersApiRoutes = require('./src/routes/api/usersApiRoute');
 
 // 1. Configuración del Motor de Plantillas (EJS)
+// EXPLICACIÓN: Aquí configuramos EJS. Esto permite que el backend arme el HTML de la tienda pública 
+// (el catálogo, el carrito) inyectando datos directamente antes de enviarlo al navegador del cliente.
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
@@ -36,6 +38,9 @@ app.use(session({
 }));
 
 // Middleware para inicializar el carrito en la sesión y pasar datos a todas las vistas
+// EXPLICACIÓN: Utilizamos este middleware de sesión. Antes de que cualquier ruta responda, este bloque 
+// revisa si el usuario tiene un carrito activo. Al guardarlo en `res.locals`, el contador del carrito 
+// y los datos del usuario logueado están disponibles globalmente en cualquier pantalla de la tienda.
 app.use((req, res, next) => {
     cartService.initializeCart(req.session);
     
@@ -47,8 +52,11 @@ app.use((req, res, next) => {
 });
 
 // 4. RUTAS DEFINIDAS
+// EXPLICACIÓN: Las rutas de la tienda normal (EJS) están arriba.
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
+// EXPLICACIÓN: Estas rutas de la API (/api/...) son distintas. Devuelven respuestas en formato JSON puro. 
+// Están diseñadas exclusivamente para que nuestro Panel de Administración en React las consuma y gestione la información.
 app.use('/api/products', productsApiRoutes);
 app.use('/api/categories', categoriesApiRoutes);
 app.use('/api/stats', statsApiRoutes);

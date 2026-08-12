@@ -15,6 +15,8 @@ import NotFound from './pages/NotFound/NotFound';
 
 export default function App() {
   return (
+    // EXPLICACIÓN: El frontend es una Single Page Application (SPA). Usamos 'react-router-dom' (BrowserRouter y Routes)
+    // para navegar entre las distintas pantallas del panel de administración sin que la página del navegador se recargue.
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>

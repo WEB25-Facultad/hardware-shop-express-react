@@ -13,6 +13,9 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // EXPLICACIÓN: Aquí demostramos la integración Frontend-Backend. 
+    // Usamos el hook 'useEffect' para que, apenas el componente se monta en pantalla, 
+    // hagamos una petición HTTP ('fetch') a la API de nuestro servidor Express en el puerto 3000.
     fetch('http://localhost:3000/api/stats')
       .then(res => {
         if (!res.ok) throw new Error('Error fetching stats');
