@@ -1,44 +1,40 @@
 const db = require('../../db/database');
 
-// Función auxiliar para mapear los tipos de datos devueltos por SQLite a los esperados por JS
+// DTO (Data Transfer Object): Mapea tipos de datos entre SQLite y JavaScript
 const mapProduct = (row) => {
     if (!row) return null;
     return {
         ...row,
-        // En SQLite el boolean se guarda como 0 o 1. Lo pasamos a true/false para mantener la interfaz.
+        // SQLite no soporta Booleanos puros (guarda 0 o 1). Esto lo reconvierte a true/false.
         mostRequested: Boolean(row.mostRequested)
     };
 };
 
+// Normalización para búsquedas insensibles a tildes y mayúsculas
 const normalizeString = (str) => {
     if (!str) return '';
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
 
 const productsService = {
-    // Middleware: Normalizar ID y validar existencia
+    // Middleware inteligente: Valida el ID y maneja respuestas según el origen (API vs Navegador)
     normalizeId: (req, res, next) => {
         const id = Number(req.params.id);
         const isJson = req.originalUrl.startsWith('/api') || req.query.format === 'json' || req.headers.accept?.includes('json') || req.method === 'PUT' || req.method === 'DELETE';
         
         if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
-            if (isJson) {
-                return res.status(400).json({ error: 'Identificador inválido' });
-            }
+            if (isJson) return res.status(400).json({ error: 'Identificador inválido' });
             return res.status(400).render('pages/400');
         }
 
-        // Validar que el producto exista en la base
         const stmt = db.prepare('SELECT 1 FROM products WHERE id = ?');
         const exists = stmt.get(id);
 
         if (!exists) {
-            if (isJson) {
-                return res.status(404).json({ error: 'Producto no encontrado' });
-            }
+            if (isJson) return res.status(404).json({ error: 'Producto no encontrado' });
             
-            // Si el producto no existe, obtenemos 4 productos recomendados aleatorios
-            // para mostrarlos en el carrusel de recomendación en la página 404
+            // UX (User Experience): Si el producto no existe, no mostramos un error vacío.
+            // Buscamos 4 productos al azar para recomendarlos en la página de Error 404.
             const recommended = productsService.findAll().sort(() => 0.5 - Math.random()).slice(0, 4);
             return res.status(404).render('pages/404', { recommended });
         }
@@ -47,51 +43,45 @@ const productsService = {
         next();
     },
 
-    // Obtener todos los productos desde SQLite (con opción de ordenamiento en la propia query SQL)
     findAll: (sortQuery = null) => {
         let query = 'SELECT * FROM products';
         
-        // Delegamos el ordenamiento directamente al motor de base de datos
-        if (sortQuery === 'asc') {
-            query += ' ORDER BY price ASC';
-        } else if (sortQuery === 'desc') {
-            query += ' ORDER BY price DESC';
-        }
+        // Optimización: Delegamos el ordenamiento al motor SQL en lugar de usar sort() en JS
+        if (sortQuery === 'asc') query += ' ORDER BY price ASC';
+        else if (sortQuery === 'desc') query += ' ORDER BY price DESC';
 
         const rows = db.prepare(query).all();
         return rows.map(mapProduct);
     },
 
-    // Buscar productos por nombre usando SQL LIKE
     searchByName: (query) => {
         if (!query) return [];
-        // Se usan parámetros vinculados (?) para prevenir inyección SQL
+        // Seguridad: Usamos el parámetro vinculado (?) con operador LIKE para prevenir Inyección SQL
         const stmt = db.prepare('SELECT * FROM products WHERE name LIKE ?');
         const rows = stmt.all(`%${query}%`);
         return rows.map(mapProduct);
     },
 
-    // Buscar un producto por su ID
     findById: (id) => {
         const stmt = db.prepare('SELECT * FROM products WHERE id = ?');
-        // get() retorna un solo objeto (o undefined si no existe)
         const row = stmt.get(id);
         return mapProduct(row);
     },
 
-    // Buscar múltiples productos por ID de una vez
     findByIds: (ids) => {
         if (!ids || ids.length === 0) return [];
+        // SQL Dinámico: Crea tantos signos de interrogación como IDs haya (ej: "?, ?, ?")
         const placeholders = ids.map(() => '?').join(',');
         const stmt = db.prepare(`SELECT * FROM products WHERE id IN (${placeholders})`);
+        // Usamos el operador spread (...) para pasar el array como argumentos individuales
         const rows = stmt.all(...ids);
         return rows.map(mapProduct);
     },
 
-    // Obtener hasta 4 productos relacionados aleatorios (misma categoría, distinto ID)
     getRelatedProducts: (product) => {
         if (!product) return [];
         
+        // SQL Avanzado: Mismo rubro, distinto ID, ordenado aleatoriamente y limitado a 4
         const stmt = db.prepare(`
             SELECT * FROM products 
             WHERE category = ? AND id != ? 
@@ -102,12 +92,11 @@ const productsService = {
         return rows.map(mapProduct);
     },
 
-    // Obtener productos para el Home (recomendados y más pedidos aleatorios)
     getProductsForHome: () => {
-        // "Te puede interesar": 5 productos aleatorios
+        // Obtenemos 5 recomendados aleatorios delegando la aleatoriedad a SQLite
         const recommendedRows = db.prepare('SELECT * FROM products ORDER BY RANDOM() LIMIT 5').all();
         
-        // "Los más pedidos": hasta 10 productos con el flag encendido
+        // Filtramos por flag Booleano en SQL (mostRequested = 1)
         const mostRequestedRows = db.prepare('SELECT * FROM products WHERE mostRequested = 1 ORDER BY RANDOM() LIMIT 10').all();
             
         return {
@@ -116,17 +105,16 @@ const productsService = {
         };
     },
 
-    // Filtrar productos por categoría exacto (insensible a acentos/diacríticos y mayúsculas)
     getProductsByCategory: (categoryName) => {
         const stmt = db.prepare('SELECT * FROM products');
         const rows = stmt.all();
         const target = normalizeString(categoryName);
+        // Filtrado en JS para resolver inconsistencias de mayúsculas/tildes 
         return rows
             .filter(p => normalizeString(p.category) === target)
             .map(mapProduct);
     },
 
-    // Actualizar producto en SQLite
     update: (id, data) => {
         const stmt = db.prepare(`
             UPDATE products 
@@ -137,14 +125,12 @@ const productsService = {
         return productsService.findById(id);
     },
 
-    // Eliminar producto de SQLite
     delete: (id) => {
         const stmt = db.prepare('DELETE FROM products WHERE id = ?');
         stmt.run(id);
         return true;
     },
 
-    // Crear producto en SQLite
     create: (data) => {
         const stmt = db.prepare(`
             INSERT INTO products (name, price, description, image, category, stock, tienda)

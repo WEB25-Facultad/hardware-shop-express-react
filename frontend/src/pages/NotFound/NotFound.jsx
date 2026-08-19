@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import './NotFound.css';
 
+// Componente Fallback: Se renderiza automáticamente cuando el usuario ingresa a una ruta que no existe
 export default function NotFound() {
   return (
     <div className="not-found-container">
@@ -17,6 +18,7 @@ export default function NotFound() {
           La ruta que estás buscando no existe o ha sido movida temporalmente.
         </p>
 
+        {/* Navegación interna con React Router para regresar al Home sin recargar la página */}
         <Link to="/" className="glow-btn back-home-btn">
           <ArrowLeft size={18} /> Volver al Inicio
         </Link>

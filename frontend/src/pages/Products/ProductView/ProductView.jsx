@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import './ProductView.css';
 import { ArrowLeft, Save, Trash2, Plus, Minus, Image, Check } from 'lucide-react';
 
+// Helper: Normaliza la URL de la imagen para que React la busque en el Backend (puerto 3000)
 const getImageUrl = (imagePath) => {
   if (!imagePath) return '';
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -12,10 +13,12 @@ const getImageUrl = (imagePath) => {
 };
 
 export default function ProductView() {
+  // Extrae el parámetro dinámico de la URL. Si es 'new', estamos creando; si es un número, estamos editando.
   const { id } = useParams();
   const navigate = useNavigate();
   const isNew = !id || id === 'new';
   
+  // Estado centralizado para el formulario (Two-Way Data Binding)
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -27,13 +30,17 @@ export default function ProductView() {
     tienda: 'Olivia Store'
   });
   
+  // Guardamos una copia de los datos originales para poder hacer "Cancelar" y revertir los cambios
   const [originalData, setOriginalData] = useState(null);
+  
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Estado para popular el <select> de categorías dinámicamente
   const [categories, setCategories] = useState([]);
 
-  // Fetch categories from API
+  // Efecto 1: Carga la lista de categorías disponibles desde la API (Independiente del producto)
   useEffect(() => {
     fetch('http://localhost:3000/api/categories')
       .then(res => {
@@ -48,7 +55,7 @@ export default function ProductView() {
       });
   }, []);
 
-  // Fetch product from API
+  // Efecto 2: Si estamos editando, carga los datos del producto específico desde la API
   useEffect(() => {
     if (!isNew) {
       setIsLoading(true);
@@ -58,6 +65,7 @@ export default function ProductView() {
           return res.json();
         })
         .then(data => {
+          // Sanitización de datos antes de inyectarlos al formulario
           const product = {
             id: data.id,
             name: data.name || '',
@@ -81,6 +89,7 @@ export default function ProductView() {
     }
   }, [id, isNew]);
 
+  // Manejador genérico para todos los inputs del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -89,10 +98,11 @@ export default function ProductView() {
     }));
   };
 
+  // Manejador específico para los botones de (+) y (-) del Stock
   const handleStockChange = (amount) => {
     setFormData(prev => {
       const currentStock = parseInt(prev.stock, 10) || 0;
-      const newStock = Math.max(0, currentStock + amount);
+      const newStock = Math.max(0, currentStock + amount); // Evita valores negativos
       return {
         ...prev,
         stock: newStock
@@ -107,6 +117,7 @@ export default function ProductView() {
     }));
   };
 
+  // Restaura el formulario a su estado original (o lo vacía si es uno nuevo)
   const handleCancel = () => {
     if (originalData) {
       setFormData(originalData);
@@ -127,7 +138,7 @@ export default function ProductView() {
   const handleSave = (e) => {
     e.preventDefault();
     
-    // Validaciones
+    // Validaciones Client-Side
     if (!formData.name || formData.name.trim() === '') {
       alert('El nombre es requerido');
       return;
@@ -145,6 +156,7 @@ export default function ProductView() {
       return;
     }
 
+    // Definición dinámica para que el mismo código sirva para Crear y para Editar
     const url = isNew ? 'http://localhost:3000/api/products' : `http://localhost:3000/api/products/${id}`;
     const method = isNew ? 'POST' : 'PUT';
 
@@ -165,12 +177,14 @@ export default function ProductView() {
       })
       .then(data => {
         setIsSaved(true);
-        // Actualizar datos originales
+        // Actualizamos la copia de seguridad con los nuevos datos guardados
         setOriginalData({
           ...formData,
           price: parsedPrice,
           stock: parsedStock
         });
+        
+        // Feedback visual temporal antes de redirigir
         setTimeout(() => {
           setIsSaved(false);
           navigate('/products');
@@ -204,10 +218,12 @@ export default function ProductView() {
     }
   };
 
+  // Renderizado Condicional: Mientras se hace la petición al servidor
   if (isLoading) {
     return <div className="product-view-loading">Cargando producto...</div>;
   }
 
+  // Renderizado Condicional: Si la base de datos devuelve error (Ej. ID inexistente)
   if (error) {
     return (
       <div className="product-view-error">
@@ -222,7 +238,7 @@ export default function ProductView() {
 
   return (
     <div className="product-view-container">
-      <div className="component-placeholder-tag">Component: ProductView</div>
+      <div className="component-placeholder-tag">Componente: ProductView</div>
 
       {/* Header */}
       <header className="product-view-header animate-fade-in">
@@ -237,7 +253,7 @@ export default function ProductView() {
         </button>
       </header>
 
-      {/* Summary Card */}
+      {/* Tarjeta de Resumen Visual */}
       <div className="product-summary-card glass-panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
         <div className="summary-image-wrapper">
           {formData.image ? (
@@ -270,11 +286,10 @@ export default function ProductView() {
         </div>
       </div>
 
-      {/* Forms Section */}
+      {/* Sección del Formulario Principal */}
       <div className="product-forms-section animate-fade-in" style={{ animationDelay: '0.2s' }}>
         <form onSubmit={handleSave} className="product-edit-form">
           
-          {/* Información Panel */}
           <div className="glass-panel form-panel">
             <h3 className="panel-title">Información</h3>
             
@@ -352,6 +367,7 @@ export default function ProductView() {
                   onChange={handleChange}
                 >
                   <option value="" disabled>Seleccione una categoría</option>
+                  {/* Select popularizado dinámicamente desde el Backend */}
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.name}>{cat.name}</option>
                   ))}
@@ -373,7 +389,6 @@ export default function ProductView() {
             </div>
           </div>
 
-          {/* Galería de Imágenes Panel */}
           <div className="glass-panel form-panel">
             <h3 className="panel-title">Galería de Imágenes</h3>
             
@@ -401,7 +416,6 @@ export default function ProductView() {
             )}
           </div>
 
-          {/* Form Actions */}
           <div className="form-actions">
             <button type="button" onClick={handleCancel} className="cancel-btn">
               Cancelar

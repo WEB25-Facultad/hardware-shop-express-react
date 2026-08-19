@@ -8,6 +8,7 @@ export default function UsersList() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Hook de Efecto: Carga la lista inicial de usuarios desde la Base de Datos
   useEffect(() => {
     fetch('http://localhost:3000/api/users')
       .then(res => {
@@ -25,6 +26,7 @@ export default function UsersList() {
   }, []);
 
   const handleDelete = (id, name) => {
+    // Interacción nativa del navegador para prevenir borrados accidentales
     if (window.confirm(`¿Estás seguro de que querés eliminar al usuario ${name}?`)) {
       fetch(`http://localhost:3000/api/users/${id}`, {
         method: 'DELETE'
@@ -35,6 +37,7 @@ export default function UsersList() {
         })
         .then(data => {
           if (data.success) {
+            // Actualización optimista de la UI: Filtramos el usuario borrado del estado local
             setUsers(prev => prev.filter(u => u.id !== id));
           } else {
             alert(data.error || 'Error al eliminar usuario');
@@ -47,6 +50,7 @@ export default function UsersList() {
     }
   };
 
+  // Filtrado reactivo en tiempo real (Client-Side Search)
   const filteredUsers = users.filter(u =>
     (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -55,8 +59,7 @@ export default function UsersList() {
 
   return (
     <div className="users-list-container">
-      {/* Component Name Placeholder (Styled) */}
-      <div className="component-placeholder-tag">Component: UsersList</div>
+      <div className="component-placeholder-tag">Componente: UsersList</div>
 
       <header className="page-header animate-fade-in">
         <div>
@@ -69,7 +72,7 @@ export default function UsersList() {
         </Link>
       </header>
 
-      {/* Search Bar */}
+      {/* Barra de Búsqueda conectada al estado searchTerm */}
       <div className="table-controls animate-fade-in" style={{ animationDelay: '0.1s' }}>
         <div className="search-bar-wrapper">
           <Search className="search-icon" size={18} />
@@ -83,7 +86,7 @@ export default function UsersList() {
         </div>
       </div>
 
-      {/* Users Table */}
+      {/* Tabla de Usuarios */}
       <div className="glass-panel table-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
         <div className="table-responsive">
           <table className="users-table">
@@ -110,6 +113,7 @@ export default function UsersList() {
                     </td>
                     <td className="user-email">{u.email}</td>
                     <td>
+                      {/* Renderizado condicional dinámico para estilos CSS (Badge) */}
                       <span className={`role-tag ${
                         u.role === 'Administrador' ? 'admin' :
                         u.role === 'Editor' ? 'editor' : 'client'

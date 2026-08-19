@@ -36,6 +36,8 @@ const userApiController = {
             }
             
             // Format joined date (e.g., '2026-07-30 18:17:40' to '30/07/2026')
+            // Aquí el backend convierte esa fecha a un formato humano y amigable (DD/MM/YYYY) 
+            // antes de mandarlo a React.
             let joined = 'Hoy';
             if (user.created_at) {
                 const dateObj = new Date(user.created_at);

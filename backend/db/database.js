@@ -1,6 +1,6 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs');  //Nos ayudan a encontrar y leer archivos (modulos nativos de Node.js)
 
 // 1. Inicializar la conexión a la base de datos (se creará el archivo si no existe)
 // EXPLICACIÓN: Usamos 'better-sqlite3' por ser muy rápido y sincrónico. Al iniciar el servidor, 
@@ -28,4 +28,6 @@ try {
 console.log('Base de datos SQLite inicializada correctamente.');
 
 // Exportar la conexión para que los módulos de servicios la utilicen
+// Convertimos este archivo en un "Singleton" basicamente para cuando services haga (require) 
+// usen la misma conexion a la bd y no crear nuevas en cada services, asi ahorramos memoria
 module.exports = db;

@@ -1,11 +1,12 @@
+// NO debe saber si usamos SQLite, MySQL o JSON. Su único trabajo es pedirle datos al servicio.
 const categoryService = require('../../services/categoryService');
 
 const categoryApiController = {
     // GET /api/categories
     list: (req, res) => {
         try {
-            const categories = categoryService.findAll();
-            res.json(categories);
+            const categories = categoryService.findAll(); //Como esto es una API, usamos res.json() en lugar de res.render().
+            res.json(categories);                         //por que nuestro backend pasa el array de JS a formato JSON.
         } catch (error) {
             console.error('Error in API list categories:', error);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -15,8 +16,8 @@ const categoryApiController = {
     // GET /api/categories/:id
     detail: (req, res) => {
         try {
-            const category = categoryService.findById(req.normalizedId);
-            res.json(category);
+            const category = categoryService.findById(req.normalizedId); //un middleware anterior ya validó que el ID sea un número válido
+            res.json(category);                                          
         } catch (error) {
             console.error('Error in API detail category:', error);
             res.status(500).json({ error: 'Internal Server Error' });

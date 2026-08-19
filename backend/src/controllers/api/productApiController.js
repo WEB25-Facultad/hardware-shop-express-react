@@ -2,8 +2,8 @@ const productsService = require('../../services/productsService');
 
 const productApiController = {
     // GET /api/products
-    list: (req, res) => {
-        try {
+    list: (req, res) => {                   // si React hace un fetch a "/api/products?sort=asc solo valdra asc
+        try {               // Esto es ideal para enviar filtros, búsquedas u ordenamientos sin cambiar la ruta principal
             const sortQuery = req.query.sort; 
             const products = productsService.findAll(sortQuery);
             res.json(products);
@@ -60,7 +60,7 @@ const productApiController = {
     // PUT /api/products/:id
     update: (req, res) => {
         try {
-            let { name, price, stock, description, image, category, tienda } = req.body;
+            let { name, price, stock, description, image, category, tienda } = req.body; //sacamos los datos pesados
 
             if (!name || name.trim() === '') {
                 return res.status(400).json({ error: 'El nombre es requerido' });

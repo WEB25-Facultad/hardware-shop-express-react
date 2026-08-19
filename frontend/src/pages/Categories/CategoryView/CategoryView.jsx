@@ -4,12 +4,13 @@ import './CategoryView.css';
 import { ArrowLeft, Save, Folder, Check, AlertCircle, Trash2, ShieldAlert } from 'lucide-react';
 
 export default function CategoryView() {
+  // Extraemos el ID de la URL (ej: /categories/5). Si dice 'new', es creación.
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
   const isNew = !id || id === 'new';
 
-  // Estado del formulario
+  // Estado centralizado para manejar todos los campos del formulario
   const [formData, setFormData] = useState({
     id: isNew ? 'Nueva' : id,
     name: '',
@@ -18,24 +19,24 @@ export default function CategoryView() {
     status: 'Activo',
   });
 
-  // Estado para la gestión de productos asociados
+  // Estados para gestionar la relación Categoría <-> Productos
   const [allProducts, setAllProducts] = useState([]);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Efecto principal para cargar la categoría y todos los productos disponibles
+  // Hook de Efecto: Se dispara al cargar para buscar datos en la Base de Datos
   useEffect(() => {
     setIsLoading(true);
     
-    // Primero obtenemos todos los productos desde la API de Express
+    // Solicitud GET inicial para cargar el listado de productos disponibles
     fetch('http://localhost:3000/api/products')
       .then(res => res.ok ? res.json() : [])
       .then(productsData => {
         setAllProducts(productsData);
         
-        // Si estamos editando una categoría existente, cargamos sus detalles
+        // Si es Modo Edición, buscamos los datos específicos de esta categoría
         if (!isNew) {
           fetch(`http://localhost:3000/api/categories/${id}`)
             .then(res => {
@@ -43,6 +44,7 @@ export default function CategoryView() {
               return res.json();
             })
             .then(catData => {
+              // Rellenamos el formulario con los datos de la DB
               setFormData({
                 id: catData.id,
                 name: catData.name || '',
@@ -51,7 +53,7 @@ export default function CategoryView() {
                 status: catData.status || 'Activo'
               });
               
-              // Filtramos qué productos ya están asociados a esta categoría
+              // Filtramos y marcamos automáticamente los productos que ya pertenecen a esta categoría
               const associatedIds = productsData
                 .filter(p => p.category === catData.name)
                 .map(p => p.id);
@@ -72,23 +74,25 @@ export default function CategoryView() {
       });
   }, [id, isNew]);
 
+  // Manejador genérico para Inputs: Actualiza el estado y auto-genera el "slug"
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      // Generar slug URL automáticamente a partir del nombre en tiempo real
+      // Si el usuario cambia el Nombre, generamos el Slug de URL en tiempo real
       slug: name === 'name' ? value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-') : prev.slug
     }));
   };
 
-  // Manejador del checkbox para asociar/desasociar productos
+  // Lógica de Checkbox: Agrega o quita IDs del array de productos seleccionados
   const handleProductToggle = (prodId) => {
     setSelectedProductIds(prev => 
       prev.includes(prodId) ? prev.filter(id => id !== prodId) : [...prev, prodId]
     );
   };
 
+  // Función principal de Guardado (Submit)
   const handleSave = (e) => {
     e.preventDefault();
 
@@ -97,10 +101,11 @@ export default function CategoryView() {
       return;
     }
 
+    // Definición dinámica de URL y Método (POST para Crear, PUT para Editar)
     const url = isNew ? 'http://localhost:3000/api/categories' : `http://localhost:3000/api/categories/${id}`;
     const method = isNew ? 'POST' : 'PUT';
 
-    // 1. Guardar o modificar los detalles de la categoría en SQLite
+    // 1. Fase Uno: Guardar los detalles de la categoría en SQLite
     fetch(url, {
       method: method,
       headers: {
@@ -115,35 +120,37 @@ export default function CategoryView() {
         return res.json();
       })
       .then((savedCat) => {
-        // Obtenemos el nombre final de la categoría guardada (útil para asociar productos)
         const categoryName = formData.name;
 
-        // 2. NUEVA FUNCIONALIDAD: Actualizar la categoría de cada producto modificado en la lista
+        // 2. Fase Dos: Guardado Múltiple de Productos (Promise.all)
+        // Mapeamos todos los productos para ver cuáles sufrieron cambios de categoría
         const promises = allProducts.map(prod => {
           const isSelected = selectedProductIds.includes(prod.id);
           const currentCat = prod.category;
 
+          // Escenario A: El producto se tildó ahora, pero antes no estaba en esta categoría
           if (isSelected && currentCat !== categoryName) {
-            // El producto fue seleccionado y no pertenecía: lo actualizamos en la base de datos
             return fetch(`http://localhost:3000/api/products/${prod.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...prod, category: categoryName })
             });
+          // Escenario B: El producto se destildó, pero antes sí estaba en esta categoría
           } else if (!isSelected && currentCat === categoryName) {
-            // El producto fue deseleccionado y pertenecía: lo removemos (le asignamos 'Otros')
             return fetch(`http://localhost:3000/api/products/${prod.id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...prod, category: 'Otros' })
             });
           }
-          return null;
-        }).filter(Boolean);
+          return null; // Si no hubo cambios, no disparamos la petición
+        }).filter(Boolean); // Filtramos los nulls
 
+        // Ejecutamos todas las peticiones de actualización de productos en paralelo
         return Promise.all(promises);
       })
       .then(() => {
+        // Feedback visual de éxito y redirección
         setIsSaved(true);
         setTimeout(() => {
           setIsSaved(false);
@@ -155,6 +162,7 @@ export default function CategoryView() {
       });
   };
 
+  // Función de Borrado de Categoría
   const handleDelete = () => {
     if (isNew) {
       navigate('/categories');
@@ -178,10 +186,12 @@ export default function CategoryView() {
     }
   };
 
+  // Renderizado condicional mientras carga la DB
   if (isLoading) {
     return <div className="category-view-loading">Cargando categoría y productos...</div>;
   }
 
+  // Renderizado condicional en caso de error
   if (error) {
     return (
       <div className="category-view-error">
@@ -196,7 +206,7 @@ export default function CategoryView() {
 
   return (
     <div className="category-view-container">
-      <div className="component-placeholder-tag">Component: CategoryView</div>
+      <div className="component-placeholder-tag">Componente: CategoryView</div>
 
       <header className="page-header animate-fade-in">
         <div className="back-link-wrapper">
@@ -213,7 +223,7 @@ export default function CategoryView() {
       </header>
 
       <div className="category-view-layout">
-        {/* Formulario */}
+        {/* Formulario conectado al estado "formData" y a la función de guardado "handleSave" */}
         <form onSubmit={handleSave} className="glass-panel category-form animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <h3 className="section-title">Detalles de Categoría</h3>
 
@@ -267,7 +277,7 @@ export default function CategoryView() {
             ></textarea>
           </div>
 
-          {/* NUEVA SECCIÓN: Gestión interactiva para asociar y quitar productos de esta categoría */}
+          {/* SECCIÓN INTERACTIVA: Checkboxes controlados por el estado selectedProductIds */}
           <div className="products-association-section" style={{ marginTop: '25px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <h4 style={{ color: 'white', marginBottom: '8px', fontSize: '1rem', fontWeight: '600' }}>Asociar Productos</h4>
             <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: '15px' }}>Seleccioná los productos que querés incluir dentro de esta categoría:</p>

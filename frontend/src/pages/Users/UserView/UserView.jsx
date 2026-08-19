@@ -34,6 +34,7 @@ export default function UserView() {
         .then(data => {
           setFormData({
             ...data,
+            // Medida de seguridad Front-End: Aseguramos que el campo password quede vacío al editar
             password: '' // No se carga la contraseña por razones de seguridad
           });
           setIsLoading(false);
@@ -91,6 +92,7 @@ export default function UserView() {
     const url = isNew ? 'http://localhost:3000/api/users' : `http://localhost:3000/api/users/${id}`;
     const method = isNew ? 'POST' : 'PUT';
     
+    // Diferenciación de Payload: Enviamos datos sensibles solo si estamos creando
     // Si es creación enviamos los datos completos del registro; si es edición, solo el rol y estado
     const bodyData = isNew 
       ? {

@@ -1,7 +1,7 @@
 const productsService = require('./productsService');
 
 const cartService = {
-    // Inicializar el carrito en la sesión si no existe
+    // Patrón Singleton: Si la sesión no tiene carrito, lo crea vacío; si lo tiene, lo devuelve.
     initializeCart: (session) => {
         if (!session.cart) {
             session.cart = [];
@@ -9,29 +9,28 @@ const cartService = {
         return session.cart;
     },
 
-    // Obtener los productos del carrito con todos sus detalles para la vista
+    // "Hidratación" del carrito: Mezcla los IDs guardados en sesión con los datos reales de la BD
     getCartDetails: (session) => {
         const cart = cartService.initializeCart(session);
         if (cart.length === 0) return [];
 
-        // 1. Obtener todos los IDs y consultar en 1 solo viaje a la base de datos
+        // 1. Optimización: Extraemos IDs y hacemos 1 sola consulta a la DB (evita el problema N+1)
         const productIds = cart.map(item => item.productId);
         const productsFromDb = productsService.findByIds(productIds);
         
-        // 2. Crear un diccionario rápido por ID
+        // 2. Diccionario (Hash Map) para acceso instantáneo a los datos
         const productMap = {};
         for (const p of productsFromDb) {
             productMap[p.id] = p;
         }
 
-        // 3. Reconstruir el carrito manteniendo el orden de sesión
         const hydratedCart = [];
-        const validCartItems = []; // Para limpiar ítems obsoletos
+        const validCartItems = []; 
 
         for (const item of cart) {
             const product = productMap[item.productId];
             
-            // Si el producto sigue existiendo en DB
+            // 3. Autolimpieza: Si el producto aún existe, lo agregamos al carrito final
             if (product) {
                 validCartItems.push(item);
                 hydratedCart.push({
@@ -42,7 +41,7 @@ const cartService = {
             }
         }
 
-        // 4. Limpieza de productos inexistentes: actualizar sesión solo con los válidos
+        // 4. Sincronización: Si un producto fue borrado de la DB por el Admin, lo borramos de la sesión
         if (validCartItems.length !== cart.length) {
             session.cart = validCartItems;
         }
@@ -50,24 +49,24 @@ const cartService = {
         return hydratedCart;
     },
 
-    // Calcular el total general del carrito
+    // Cálculo del total delegando en getCartDetails para asegurar precios actualizados
     calculateTotal: (session) => {
         const cartDetails = cartService.getCartDetails(session);
         return cartDetails.reduce((acc, curr) => acc + curr.subtotal, 0);
     },
 
-    // Calcular la cantidad total de ítems (para el badge del header)
+    // Cálculo rápido de ítems sumando cantidades (sin llamar a la DB)
     calculateItemCount: (session) => {
         const cart = cartService.initializeCart(session);
         return cart.reduce((total, item) => total + item.quantity, 0);
     },
 
-    // Agregar un producto al carrito
+    // Inserción o actualización de cantidad
     addProduct: (session, productId) => {
         const cart = cartService.initializeCart(session);
         const product = productsService.findById(productId);
         
-        // Validar que el producto exista y tenga stock
+        // Validación de negocio: No se puede agregar si no existe o no hay stock
         if (!product || product.stock === 0) {
             return false;
         }
@@ -75,10 +74,8 @@ const cartService = {
         const productIndex = cart.findIndex(item => item.productId === productId);
 
         if (productIndex !== -1) {
-            // Si ya existe, incrementar cantidad
             cart[productIndex].quantity += 1;
         } else {
-            // Si no existe, agregarlo
             cart.push({
                 productId: productId,
                 quantity: 1
@@ -87,7 +84,6 @@ const cartService = {
         return true;
     },
 
-    // Modificar cantidad: Incrementar
     increaseQuantity: (session, productId) => {
         const cart = cartService.initializeCart(session);
         const product = productsService.findById(productId);
@@ -102,14 +98,13 @@ const cartService = {
         return false;
     },
 
-    // Modificar cantidad: Disminuir
     decreaseQuantity: (session, productId) => {
         const cart = cartService.initializeCart(session);
         const productIndex = cart.findIndex(item => item.productId === productId);
 
         if (productIndex !== -1) {
             cart[productIndex].quantity -= 1;
-            // Si llega a 0, se elimina
+            // Si la cantidad llega a 0, removemos el objeto del array (splice)
             if (cart[productIndex].quantity <= 0) {
                 cart.splice(productIndex, 1);
             }
@@ -118,13 +113,11 @@ const cartService = {
         return false;
     },
 
-    // Quitar producto completamente
     removeProduct: (session, productId) => {
         const cart = cartService.initializeCart(session);
         session.cart = cart.filter(item => item.productId !== productId);
     },
 
-    // Vaciar todo el carrito
     clearCart: (session) => {
         session.cart = [];
     }

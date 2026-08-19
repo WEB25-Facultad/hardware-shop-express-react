@@ -1,19 +1,21 @@
 const DEFAULT_BASE_URL = 'http://localhost:3000';
 
 /**
- * Base fetch function to communicate with the backend REST API.
- * Configures the base URL, serializes bodies to JSON, and handles HTTP errors.
+ * Función base (Wrapper) para comunicarse con la API REST del backend.
+ * Configura la URL base automáticamente, serializa los bodies a JSON
+ * y maneja los errores HTTP de forma centralizada.
  * 
- * @param {string} endpoint - The API endpoint path (e.g., '/products')
- * @param {object} options - Fetch options (method, headers, body, etc.)
- * @returns {Promise<any>} Response JSON data
+ * @param {string} endpoint - La ruta del endpoint de la API (ej., '/products')
+ * @param {object} options - Opciones del Fetch (method, headers, body, etc.)
+ * @returns {Promise<any>} Datos de la respuesta parseados a JSON
  */
 export async function apiFetch(endpoint, options = {}) {
-  // Allow overriding base URL dynamically or fallback to env or default
+  // Soporte para variables de entorno (Vite) permitiendo cambiar la URL en Producción
   const baseUrl = import.meta.env.VITE_API_URL || DEFAULT_BASE_URL;
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${baseUrl}${cleanEndpoint}`;
 
+  // Headers estandarizados para que el backend siempre entienda que hablamos JSON
   const defaultHeaders = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -27,6 +29,7 @@ export async function apiFetch(endpoint, options = {}) {
     },
   };
 
+  // Auto-serialización: Si le pasamos un objeto JavaScript como Body, lo pasa a String JSON
   if (config.body && typeof config.body === 'object') {
     config.body = JSON.stringify(config.body);
   }
@@ -48,6 +51,7 @@ export async function apiFetch(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      // Captura de errores inteligente
       const error = new Error(
         data && typeof data === 'object' && data.message 
           ? data.message 
